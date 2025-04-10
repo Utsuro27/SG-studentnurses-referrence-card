@@ -1,0 +1,2398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nursing Reference Cards for Bhutanese Students in Singapore</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --light-color: #f0f9ff;
+            --dark-color: #1e293b;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            position: relative;
+        }
+        
+        .card-container {
+            perspective: 1000px;
+            height: 450px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            height: 100%;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .card-front {
+            background: linear-gradient(135deg, #fff, var(--light-color));
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, var(--light-color), #fff);
+            transform: rotateY(180deg);
+            z-index: 1;
+        }
+        
+        .card-container:hover .card {
+            transform: rotateY(180deg);
+        }
+        
+        .card-header {
+            border-bottom: 2px solid var(--accent-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+        }
+        
+        .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .card-category {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            margin-top: 2px;
+        }
+        
+        .card-content {
+            flex: 1;
+        }
+        
+        .card-footer {
+            font-size: 0.75rem;
+            color: var(--dark-color);
+            border-top: 1px solid #e2e8f0;
+            margin-top: 10px;
+            padding-top: 10px;
+            text-align: right;
+        }
+        
+        .card table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        
+        .card th, .card td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .card th {
+            background-color: #f1f5f9;
+            font-weight: 500;
+        }
+        
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .card li {
+            margin-bottom: 5px;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 4px;
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-filter {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-filter.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .card-scroll {
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-color) #f1f5f9;
+        }
+        
+        .card-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .card-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        .card-scroll::-webkit-scrollbar-thumb {
+            background-color: var(--secondary-color);
+            border-radius: 6px;
+        }
+        
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+        
+        .search-input {
+            padding-left: 40px;
+            border-radius: 9999px;
+            border: 2px solid #e2e8f0;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+        
+        @media print {
+            .card-container {
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+            
+            .search-container, .filter-buttons {
+                display: none;
+            }
+            
+            body {
+                background: white;
+            }
+            
+            .card {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+            }
+            
+            .card-container .card {
+                transform: none !important;
+            }
+            
+            .card-back {
+                display: block;
+                transform: none;
+                position: relative;
+                margin-top: 20px;
+            }
+            
+            .card-front {
+                position: relative;
+            }
+        }
+        
+        /* Override Tailwind for specific needs */
+        .text-grad {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .singapore-pattern {
+            background-color: #f8fafc;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e3a8a' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        /* Accessible table styles */
+        .accessible-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        
+        .accessible-table th,
+        .accessible-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .accessible-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+        
+        .accessible-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        
+        .card-front::-webkit-scrollbar, .card-back::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .card-front::-webkit-scrollbar-track, .card-back::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        .card-front::-webkit-scrollbar-thumb, .card-back::-webkit-scrollbar-thumb {
+            background-color: var(--secondary-color);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body class="singapore-pattern min-h-screen pb-12">
+    <header class="bg-white shadow-md py-6 mb-8 sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h1 class="text-3xl font-bold text-grad">Nursing Reference Cards</h1>
+                    <p class="text-gray-600">For Bhutanese Nursing Students in Singapore</p>
+                </div>
+                <div class="search-container w-full md:w-auto">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input py-2 px-4" placeholder="Search cards...">
+                </div>
+            </div>
+            
+            <div class="filter-buttons mt-6 overflow-x-auto whitespace-nowrap pb-2">
+                <button class="btn-filter active px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="all">All</button>
+                <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="vital-signs">Vital Signs</button>
+                <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="lab-values">Lab Values</button>
+                <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="assessments">Assessments</button>
+                <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="procedures">Procedures</button>
+                <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="communication">Communication</button>
+                <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="medications">Medications</button>
+                <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="documentation">Documentation</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cardsContainer">
+            <!-- Card 1: Blood Glucose Levels -->
+            <div class="card-container" data-category="lab-values">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Blood Glucose Levels</h2>
+                            <div class="card-category">Lab Values</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Normal Blood Glucose Ranges in Singapore</h3>
+                            <p class="mb-3">Reference ranges for blood glucose monitoring:</p>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Measurement</th>
+                                    <th>Normal Range</th>
+                                </tr>
+                                <tr>
+                                    <td>Fasting</td>
+                                    <td>4.0 - 6.0 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Pre-meal</td>
+                                    <td>4.0 - 7.0 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>2 hours post-meal</td>
+                                    <td>&lt; 10.0 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Before bedtime</td>
+                                    <td>6.0 - 8.0 mmol/L</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for more information</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Diagnostic Criteria in Singapore</h3>
+                        <table class="accessible-table mb-4">
+                            <tr>
+                                <th>Diagnosis</th>
+                                <th>Fasting Glucose</th>
+                                <th>2hr OGTT</th>
+                                <th>HbA1c</th>
+                            </tr>
+                            <tr>
+                                <td>Normal</td>
+                                <td>&lt; 6.1 mmol/L</td>
+                                <td>&lt; 7.8 mmol/L</td>
+                                <td>&lt; 5.7%</td>
+                            </tr>
+                            <tr>
+                                <td>Prediabetes</td>
+                                <td>6.1 - 6.9 mmol/L</td>
+                                <td>7.8 - 11.0 mmol/L</td>
+                                <td>5.7 - 6.4%</td>
+                            </tr>
+                            <tr>
+                                <td>Diabetes</td>
+                                <td>≥ 7.0 mmol/L</td>
+                                <td>≥ 11.1 mmol/L</td>
+                                <td>≥ 6.5%</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mb-2">Critical Values</h3>
+                        <ul class="list-disc pl-5 mb-4">
+                            <li><span class="font-medium">Hypoglycemia:</span> &lt; 4.0 mmol/L - Requires immediate action</li>
+                            <li><span class="font-medium">Severe Hypoglycemia:</span> &lt; 2.5 mmol/L - Medical emergency</li>
+                            <li><span class="font-medium">Severe Hyperglycemia:</span> &gt; 25.0 mmol/L - Risk of DKA/HHS</li>
+                        </ul>
+                        
+                        <p class="text-sm text-gray-700 mt-4">
+                            Note: Plasma glucose values are 10-15% higher than whole blood glucose values.
+                            Always check if your glucometer calibrates to plasma or whole blood values.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 2: ABG Results Interpretation -->
+            <div class="card-container" data-category="lab-values">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">ABG Interpretation</h2>
+                            <div class="card-category">Lab Values</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Normal ABG Values</h3>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Normal Range</th>
+                                </tr>
+                                <tr>
+                                    <td>pH</td>
+                                    <td>7.35 - 7.45</td>
+                                </tr>
+                                <tr>
+                                    <td>PaCO₂</td>
+                                    <td>35 - 45 mmHg</td>
+                                </tr>
+                                <tr>
+                                    <td>PaO₂</td>
+                                    <td>80 - 100 mmHg</td>
+                                </tr>
+                                <tr>
+                                    <td>HCO₃⁻</td>
+                                    <td>22 - 26 mEq/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Base Excess</td>
+                                    <td>-2 to +2 mEq/L</td>
+                                </tr>
+                                <tr>
+                                    <td>SaO₂</td>
+                                    <td>95 - 100%</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for interpretation guide</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">ABG Interpretation Steps</h3>
+                        <ol class="list-decimal pl-5 mb-4">
+                            <li><span class="font-medium">Look at pH:</span> Acidosis (&lt;7.35) or Alkalosis (&gt;7.45)</li>
+                            <li><span class="font-medium">Check PaCO₂:</span> Respiratory component
+                                <ul class="list-disc pl-5 mt-1">
+                                    <li>High PaCO₂ (&gt;45) = Respiratory acidosis</li>
+                                    <li>Low PaCO₂ (&lt;35) = Respiratory alkalosis</li>
+                                </ul>
+                            </li>
+                            <li><span class="font-medium">Check HCO₃⁻:</span> Metabolic component
+                                <ul class="list-disc pl-5 mt-1">
+                                    <li>High HCO₃⁻ (&gt;26) = Metabolic alkalosis</li>
+                                    <li>Low HCO₃⁻ (&lt;22) = Metabolic acidosis</li>
+                                </ul>
+                            </li>
+                            <li><span class="font-medium">Assess compensation:</span>
+                                <ul class="list-disc pl-5 mt-1">
+                                    <li><span class="italic">Uncompensated:</span> Abnormal pH</li>
+                                    <li><span class="italic">Partially compensated:</span> pH abnormal but moving toward normal</li>
+                                    <li><span class="italic">Fully compensated:</span> pH normal with abnormal PaCO₂ and HCO₃⁻</li>
+                                </ul>
+                            </li>
+                            <li><span class="font-medium">Check oxygenation:</span> PaO₂ and SaO₂</li>
+                        </ol>
+                        
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p class="font-medium">Tip: Use the tic-tac-toe method for quick assessment</p>
+                            <ul class="list-disc pl-5">
+                                <li>pH &lt;7.35 with PaCO₂ &gt;45 = Respiratory acidosis</li>
+                                <li>pH &lt;7.35 with HCO₃⁻ &lt;22 = Metabolic acidosis</li>
+                                <li>pH &gt;7.45 with PaCO₂ &lt;35 = Respiratory alkalosis</li>
+                                <li>pH &gt;7.45 with HCO₃⁻ &gt;26 = Metabolic alkalosis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 3: Vital Signs -->
+            <div class="card-container" data-category="vital-signs">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Vital Signs</h2>
+                            <div class="card-category">Vital Signs</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Normal Ranges (Adults)</h3>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Vital Sign</th>
+                                    <th>Normal Range</th>
+                                </tr>
+                                <tr>
+                                    <td>Temperature</td>
+                                    <td>36.5°C - 37.5°C</td>
+                                </tr>
+                                <tr>
+                                    <td>Heart Rate</td>
+                                    <td>60 - 100 beats/min</td>
+                                </tr>
+                                <tr>
+                                    <td>Respiratory Rate</td>
+                                    <td>12 - 20 breaths/min</td>
+                                </tr>
+                                <tr>
+                                    <td>Blood Pressure</td>
+                                    <td>Systolic: 100-140 mmHg<br>Diastolic: 60-90 mmHg</td>
+                                </tr>
+                                <tr>
+                                    <td>SpO₂</td>
+                                    <td>≥ 95%</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for special considerations</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">SpO₂ for COPD Patients</h3>
+                        <p class="mb-3">For COPD patients, acceptable SpO₂ is typically 88-92%</p>
+                        
+                        <h3 class="font-medium text-lg mb-2">When to Report Vital Signs</h3>
+                        <table class="accessible-table">
+                            <tr>
+                                <th>Vital Sign</th>
+                                <th>Report if:</th>
+                            </tr>
+                            <tr>
+                                <td>Temperature</td>
+                                <td>&lt; 36.0°C or &gt; 38.5°C</td>
+                            </tr>
+                            <tr>
+                                <td>Heart Rate</td>
+                                <td>&lt; 50 or &gt; 120 beats/min</td>
+                            </tr>
+                            <tr>
+                                <td>Respiratory Rate</td>
+                                <td>&lt; 10 or &gt; 25 breaths/min</td>
+                            </tr>
+                            <tr>
+                                <td>Blood Pressure</td>
+                                <td>Systolic: &lt; 90 or &gt; 180 mmHg<br>Diastolic: &lt; 50 or &gt; 110 mmHg</td>
+                            </tr>
+                            <tr>
+                                <td>SpO₂</td>
+                                <td>&lt; 92% (or &lt; 88% for COPD)</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p class="font-medium">Important Guidelines:</p>
+                            <ul class="list-disc pl-5">
+                                <li>Do not take blood pressure on an arm with a fistula or AV graft</li>
+                                <li>Do not take blood pressure on arm on side of mastectomy</li>
+                                <li>Report significant changes even if within normal ranges</li>
+                                <li>Always consider patient's baseline values</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 4: Glasgow Coma Scale -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Glasgow Coma Scale</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">GCS Parameters</h3>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Response</th>
+                                    <th>Score</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="font-medium">Eye Opening (E)</td>
+                                </tr>
+                                <tr>
+                                    <td>Spontaneous</td>
+                                    <td>4</td>
+                                </tr>
+                                <tr>
+                                    <td>To speech</td>
+                                    <td>3</td>
+                                </tr>
+                                <tr>
+                                    <td>To pain</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>None</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="font-medium">Verbal Response (V)</td>
+                                </tr>
+                                <tr>
+                                    <td>Oriented</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>Confused</td>
+                                    <td>4</td>
+                                </tr>
+                                <tr>
+                                    <td>Inappropriate words</td>
+                                    <td>3</td>
+                                </tr>
+                                <tr>
+                                    <td>Incomprehensible sounds</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>None</td>
+                                    <td>1</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for more information</div>
+                    </div>
+                    <div class="card-back">
+                        <table class="accessible-table mb-4">
+                            <tr>
+                                <td colspan="2" class="font-medium">Motor Response (M)</td>
+                            </tr>
+                            <tr>
+                                <td>Obeys commands</td>
+                                <td>6</td>
+                            </tr>
+                            <tr>
+                                <td>Localizes pain</td>
+                                <td>5</td>
+                            </tr>
+                            <tr>
+                                <td>Withdrawal from pain</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>Flexion to pain</td>
+                                <td>3</td>
+                            </tr>
+                            <tr>
+                                <td>Extension to pain</td>
+                                <td>2</td>
+                            </tr>
+                            <tr>
+                                <td>None</td>
+                                <td>1</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mb-2">GCS Score Interpretation</h3>
+                        <table class="accessible-table">
+                            <tr>
+                                <th>Total Score</th>
+                                <th>Severity</th>
+                            </tr>
+                            <tr>
+                                <td>3-8</td>
+                                <td>Severe injury</td>
+                            </tr>
+                            <tr>
+                                <td>9-12</td>
+                                <td>Moderate injury</td>
+                            </tr>
+                            <tr>
+                                <td>13-15</td>
+                                <td>Mild injury</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mb-2 mt-4">Pupil Scale (mm)</h3>
+                        <div class="flex justify-between mt-2">
+                            <span>1</span>
+                            <span>2</span>
+                            <span>3</span>
+                            <span>4</span>
+                            <span>5</span>
+                            <span>6</span>
+                            <span>7</span>
+                            <span>8</span>
+                        </div>
+                        <div class="w-full h-4 bg-gray-200 relative">
+                            <div class="absolute left-0 top-0 w-full h-full flex justify-between px-1">
+                                <div class="w-2 h-2 rounded-full bg-black mt-1"></div>
+                                <div class="w-3 h-3 rounded-full bg-black mt-0.5"></div>
+                                <div class="w-4 h-4 rounded-full bg-black"></div>
+                                <div class="w-5 h-5 rounded-full bg-black -mt-0.5"></div>
+                                <div class="w-6 h-6 rounded-full bg-black -mt-1"></div>
+                                <div class="w-7 h-7 rounded-full bg-black -mt-1.5"></div>
+                                <div class="w-8 h-8 rounded-full bg-black -mt-2"></div>
+                                <div class="w-9 h-9 rounded-full bg-black -mt-2.5"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 5: ECG Interpretation -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">ECG Interpretation</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">ECG Basics</h3>
+                            <p class="mb-3">ECG paper: each small box = 0.04 seconds, each large box = 0.2 seconds</p>
+                            
+                            <h4 class="font-medium mb-1">Normal Intervals</h4>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Interval</th>
+                                    <th>Normal Duration</th>
+                                </tr>
+                                <tr>
+                                    <td>PR interval</td>
+                                    <td>0.12-0.20 sec</td>
+                                </tr>
+                                <tr>
+                                    <td>QRS complex</td>
+                                    <td>0.06-0.10 sec</td>
+                                </tr>
+                                <tr>
+                                    <td>QT interval</td>
+                                    <td>0.36-0.44 sec</td>
+                                </tr>
+                            </table>
+                            
+                            <h4 class="font-medium mt-3 mb-1">Heart Rate Calculation</h4>
+                            <p>300 ÷ number of large squares between R waves = heart rate</p>
+                        </div>
+                        <div class="card-footer">Flip card for rhythm interpretation</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Common Rhythms</h3>
+                        
+                        <h4 class="font-medium">Normal Sinus Rhythm</h4>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Regular rhythm</li>
+                            <li>Rate 60-100 bpm</li>
+                            <li>P wave before each QRS</li>
+                            <li>Normal PR interval</li>
+                            <li>Normal QRS duration</li>
+                        </ul>
+                        
+                        <h4 class="font-medium">Sinus Tachycardia</h4>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Regular rhythm</li>
+                            <li>Rate > 100 bpm</li>
+                            <li>Normal P waves</li>
+                            <li>Normal PR interval</li>
+                            <li>Normal QRS duration</li>
+                        </ul>
+                        
+                        <h4 class="font-medium">Sinus Bradycardia</h4>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Regular rhythm</li>
+                            <li>Rate < 60 bpm</li>
+                            <li>Normal P waves</li>
+                            <li>Normal PR interval</li>
+                            <li>Normal QRS duration</li>
+                        </ul>
+                        
+                        <h4 class="font-medium">Atrial Fibrillation</h4>
+                        <ul class="list-disc pl-5 mb-3">
+                            <li>Irregularly irregular rhythm</li>
+                            <li>No discernible P waves</li>
+                            <li>Wavy baseline</li>
+                            <li>Normal QRS duration</li>
+                        </ul>
+                        
+                        <h4 class="font-medium">Ventricular Tachycardia</h4>
+                        <ul class="list-disc pl-5">
+                            <li>Regular, wide QRS complexes</li>
+                            <li>Rate > 100 bpm</li>
+                            <li>No visible P waves</li>
+                            <li>Medical emergency - prepare for code response</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 6: Pressure Sores & Braden Scale -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Pressure Injuries & Braden Scale</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Pressure Injury Staging</h3>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Stage</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td>Stage 1</td>
+                                    <td>Non-blanchable erythema of intact skin</td>
+                                </tr>
+                                <tr>
+                                    <td>Stage 2</td>
+                                    <td>Partial-thickness skin loss with exposed dermis</td>
+                                </tr>
+                                <tr>
+                                    <td>Stage 3</td>
+                                    <td>Full-thickness skin loss</td>
+                                </tr>
+                                <tr>
+                                    <td>Stage 4</td>
+                                    <td>Full-thickness skin and tissue loss with exposed muscle, tendon, or bone</td>
+                                </tr>
+                                <tr>
+                                    <td>Unstageable</td>
+                                    <td>Full-thickness skin and tissue loss with eschar or slough</td>
+                                </tr>
+                                <tr>
+                                    <td>DTPI</td>
+                                    <td>Deep tissue pressure injury</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for Braden Scale</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Braden Scale Categories</h3>
+                        <p class="mb-3 text-sm">Each category is scored 1-4 (1-3 for Friction & Shear)</p>
+                        
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Category</th>
+                                <th>Assessment</th>
+                            </tr>
+                            <tr>
+                                <td>Sensory Perception</td>
+                                <td>Ability to respond to pressure-related discomfort</td>
+                            </tr>
+                            <tr>
+                                <td>Moisture</td>
+                                <td>Degree to which skin is exposed to moisture</td>
+                            </tr>
+                            <tr>
+                                <td>Activity</td>
+                                <td>Degree of physical activity</td>
+                            </tr>
+                            <tr>
+                                <td>Mobility</td>
+                                <td>Ability to change and control body position</td>
+                            </tr>
+                            <tr>
+                                <td>Nutrition</td>
+                                <td>Usual food intake pattern</td>
+                            </tr>
+                            <tr>
+                                <td>Friction & Shear</td>
+                                <td>Friction and shear forces during movement</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-4 mb-2">Braden Scale Risk Levels</h3>
+                        <table class="accessible-table">
+                            <tr>
+                                <th>Score</th>
+                                <th>Risk Level</th>
+                                <th>Intervention</th>
+                            </tr>
+                            <tr>
+                                <td>≤ 9</td>
+                                <td>Very High Risk</td>
+                                <td>Reposition q1-2h</td>
+                            </tr>
+                            <tr>
+                                <td>10-12</td>
+                                <td>High Risk</td>
+                                <td>Reposition q2h</td>
+                            </tr>
+                            <tr>
+                                <td>13-14</td>
+                                <td>Moderate Risk</td>
+                                <td>Reposition q2-4h</td>
+                            </tr>
+                            <tr>
+                                <td>15-18</td>
+                                <td>Mild Risk</td>
+                                <td>Standard protocol</td>
+                            </tr>
+                            <tr>
+                                <td>19-23</td>
+                                <td>No Risk</td>
+                                <td>Standard protocol</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 7: Blood Test Reference Ranges -->
+            <div class="card-container" data-category="lab-values">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Blood Test Reference Ranges</h2>
+                            <div class="card-category">Lab Values</div>
+                        </div>
+                        <div class="card-content overflow-y-auto" style="max-height: 300px;">
+                            <h3 class="font-medium text-lg mb-2">Complete Blood Count (FBC)</h3>
+                            <table class="accessible-table text-sm">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Male</th>
+                                    <th>Female</th>
+                                </tr>
+                                <tr>
+                                    <td>WBC</td>
+                                    <td>4.30-10.40</td>
+                                    <td>4.30-10.40</td>
+                                </tr>
+                                <tr>
+                                    <td>RBC</td>
+                                    <td>4.50-5.75</td>
+                                    <td>4.03-5.19</td>
+                                </tr>
+                                <tr>
+                                    <td>Hemoglobin</td>
+                                    <td>13.5-17.5 g/dL</td>
+                                    <td>12.0-15.5 g/dL</td>
+                                </tr>
+                                <tr>
+                                    <td>Hematocrit</td>
+                                    <td>41-50%</td>
+                                    <td>36-46%</td>
+                                </tr>
+                                <tr>
+                                    <td>Platelets</td>
+                                    <td>150-400 × 10⁹/L</td>
+                                    <td>150-400 × 10⁹/L</td>
+                                </tr>
+                            </table>
+                            
+                            <h3 class="font-medium text-lg mt-4 mb-2">Electrolytes</h3>
+                            <table class="accessible-table text-sm">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Reference Range</th>
+                                </tr>
+                                <tr>
+                                    <td>Sodium (Na⁺)</td>
+                                    <td>135-145 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Potassium (K⁺)</td>
+                                    <td>3.5-5.0 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Chloride (Cl⁻)</td>
+                                    <td>98-107 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Bicarbonate (HCO₃⁻)</td>
+                                    <td>22-29 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Calcium (Ca²⁺)</td>
+                                    <td>2.2-2.6 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Magnesium (Mg²⁺)</td>
+                                    <td>0.75-1.05 mmol/L</td>
+                                </tr>
+                                <tr>
+                                    <td>Phosphate (PO₄³⁻)</td>
+                                    <td>0.8-1.5 mmol/L</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for more lab values</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Renal Function</h3>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Reference Range</th>
+                            </tr>
+                            <tr>
+                                <td>Urea</td>
+                                <td>2.8-7.7 mmol/L</td>
+                            </tr>
+                            <tr>
+                                <td>Creatinine</td>
+                                <td>Male: 60-110 μmol/L<br>Female: 45-90 μmol/L</td>
+                            </tr>
+                            <tr>
+                                <td>eGFR</td>
+                                <td>≥ 90 mL/min/1.73m²</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-4 mb-2">Liver Function</h3>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Reference Range</th>
+                            </tr>
+                            <tr>
+                                <td>ALT</td>
+                                <td>Male: ≤ 55 U/L<br>Female: ≤ 45 U/L</td>
+                            </tr>
+                            <tr>
+                                <td>AST</td>
+                                <td>Male: ≤ 50 U/L<br>Female: ≤ 40 U/L</td>
+                            </tr>
+                            <tr>
+                                <td>ALP</td>
+                                <td>40-150 U/L</td>
+                            </tr>
+                            <tr>
+                                <td>Total Bilirubin</td>
+                                <td>≤ 21 μmol/L</td>
+                            </tr>
+                            <tr>
+                                <td>Albumin</td>
+                                <td>35-50 g/L</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-4 mb-2">Critical Values (Report Immediately)</h3>
+                        <ul class="list-disc pl-5 text-sm">
+                            <li>Potassium: &lt; 2.5 or &gt; 6.5 mmol/L</li>
+                            <li>Sodium: &lt; 120 or &gt; 160 mmol/L</li>
+                            <li>Glucose: &lt; 2.5 or &gt; 25.0 mmol/L</li>
+                            <li>Hemoglobin: &lt; 7.0 g/dL</li>
+                            <li>Platelets: &lt; 50 × 10⁹/L</li>
+                            <li>WBC: &lt; 2.0 or &gt; 30.0 × 10⁹/L</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 8: Infusion Timing Calculations -->
+            <div class="card-container" data-category="procedures">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">IV Infusion Calculations</h2>
+                            <div class="card-category">Procedures</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">IV Flow Rate Formulas</h3>
+                            
+                            <h4 class="font-medium mt-3 mb-1">mL/hr Calculation</h4>
+                            <div class="bg-blue-50 p-2 rounded-md mb-3">
+                                <p class="text-center">Flow rate (mL/hr) = <span class="font-medium">Total volume (mL) ÷ Time (hours)</span></p>
+                            </div>
+                            
+                            <h4 class="font-medium mb-1">Drops per Minute Calculation</h4>
+                            <div class="bg-blue-50 p-2 rounded-md mb-3">
+                                <p class="text-center">gtts/min = <span class="font-medium">(mL/hr × Drop factor) ÷ 60</span></p>
+                            </div>
+                            
+                            <h4 class="font-medium mb-1">Common Drop Factors</h4>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>IV Set Type</th>
+                                    <th>Drop Factor (gtts/mL)</th>
+                                </tr>
+                                <tr>
+                                    <td>Macrodrip</td>
+                                    <td>10, 15, or 20</td>
+                                </tr>
+                                <tr>
+                                    <td>Microdrip</td>
+                                    <td>60</td>
+                                </tr>
+                                <tr>
+                                    <td>Blood Administration</td>
+                                    <td>10 or 15</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for more calculations</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">IV Completion Time</h3>
+                        <div class="bg-blue-50 p-2 rounded-md mb-3">
+                            <p class="text-center">Time (hours) = <span class="font-medium">Total volume (mL) ÷ Flow rate (mL/hr)</span></p>
+                        </div>
+                        
+                        <h3 class="font-medium text-lg mb-2">Example Calculations</h3>
+                        
+                        <div class="mb-4">
+                            <h4 class="font-medium">Example 1: Flow Rate</h4>
+                            <p>Order: 1000 mL NS over 8 hours</p>
+                            <p>Flow rate = 1000 mL ÷ 8 hr = 125 mL/hr</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="font-medium">Example 2: Drops/Minute</h4>
+                            <p>Flow rate: 125 mL/hr</p>
+                            <p>Drop factor: 15 gtts/mL</p>
+                            <p>gtts/min = (125 × 15) ÷ 60 = 31.25 ≈ 31 gtts/min</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="font-medium">Example 3: Completion Time</h4>
+                            <p>Volume: 500 mL</p>
+                            <p>Flow rate: 75 mL/hr</p>
+                            <p>Time = 500 ÷ 75 = 6.67 hours</p>
+                            <p>6.67 hours = 6 hours and 40 minutes</p>
+                        </div>
+                        
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p class="font-medium">Important Tips:</p>
+                            <ul class="list-disc pl-5">
+                                <li>Always check the drop factor on the IV set packaging</li>
+                                <li>Count drops for a full minute for accuracy</li>
+                                <li>Regularly check infusion progress</li>
+                                <li>Ensure IV pumps are programmed correctly</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 9: Common Medical Abbreviations -->
+            <div class="card-container" data-category="documentation">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Common Medical Abbreviations</h2>
+                            <div class="card-category">Documentation</div>
+                        </div>
+                        <div class="card-content overflow-y-auto" style="max-height: 300px;">
+                            <h3 class="font-medium text-lg mb-2">General Abbreviations</h3>
+                            <table class="accessible-table text-sm">
+                                <tr>
+                                    <th>Abbreviation</th>
+                                    <th>Meaning</th>
+                                </tr>
+                                <tr>
+                                    <td>ADLs</td>
+                                    <td>Activities of Daily Living</td>
+                                </tr>
+                                <tr>
+                                    <td>BID</td>
+                                    <td>Twice a day</td>
+                                </tr>
+                                <tr>
+                                    <td>BP</td>
+                                    <td>Blood Pressure</td>
+                                </tr>
+                                <tr>
+                                    <td>c/o</td>
+                                    <td>Complains of</td>
+                                </tr>
+                                <tr>
+                                    <td>CPR</td>
+                                    <td>Cardiopulmonary Resuscitation</td>
+                                </tr>
+                                <tr>
+                                    <td>DOB</td>
+                                    <td>Date of Birth</td>
+                                </tr>
+                                <tr>
+                                    <td>Dx</td>
+                                    <td>Diagnosis</td>
+                                </tr>
+                                <tr>
+                                    <td>FBC</td>
+                                    <td>Full Blood Count</td>
+                                </tr>
+                                <tr>
+                                    <td>HR</td>
+                                    <td>Heart Rate</td>
+                                </tr>
+                                <tr>
+                                    <td>IV</td>
+                                    <td>Intravenous</td>
+                                </tr>
+                                <tr>
+                                    <td>LMP</td>
+                                    <td>Last Menstrual Period</td>
+                                </tr>
+                                <tr>
+                                    <td>NPO</td>
+                                    <td>Nothing by mouth</td>
+                                </tr>
+                                <tr>
+                                    <td>OD</td>
+                                    <td>Once Daily</td>
+                                </tr>
+                                <tr>
+                                    <td>PRN</td>
+                                    <td>As needed</td>
+                                </tr>
+                                <tr>
+                                    <td>QID</td>
+                                    <td>Four times a day</td>
+                                </tr>
+                                <tr>
+                                    <td>RR</td>
+                                    <td>Respiratory Rate</td>
+                                </tr>
+                                <tr>
+                                    <td>SpO₂</td>
+                                    <td>Oxygen Saturation</td>
+                                </tr>
+                                <tr>
+                                    <td>STAT</td>
+                                    <td>Immediately</td>
+                                </tr>
+                                <tr>
+                                    <td>TDS</td>
+                                    <td>Three times a day</td>
+                                </tr>
+                                <tr>
+                                    <td>VS</td>
+                                    <td>Vital Signs</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for more abbreviations</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Singapore-Specific Abbreviations</h3>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Abbreviation</th>
+                                <th>Meaning</th>
+                            </tr>
+                            <tr>
+                                <td>AIC</td>
+                                <td>Agency for Integrated Care</td>
+                            </tr>
+                            <tr>
+                                <td>CGH</td>
+                                <td>Changi General Hospital</td>
+                            </tr>
+                            <tr>
+                                <td>KTPH</td>
+                                <td>Khoo Teck Puat Hospital</td>
+                            </tr>
+                            <tr>
+                                <td>MOH</td>
+                                <td>Ministry of Health</td>
+                            </tr>
+                            <tr>
+                                <td>NUH</td>
+                                <td>National University Hospital</td>
+                            </tr>
+                            <tr>
+                                <td>SGH</td>
+                                <td>Singapore General Hospital</td>
+                            </tr>
+                            <tr>
+                                <td>SNB</td>
+                                <td>Singapore Nursing Board</td>
+                            </tr>
+                            <tr>
+                                <td>TTSH</td>
+                                <td>Tan Tock Seng Hospital</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-4 mb-2">Do Not Use Abbreviations</h3>
+                        <p class="text-sm mb-2">The following abbreviations are prone to errors and should be avoided:</p>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Do Not Use</th>
+                                <th>Write Instead</th>
+                            </tr>
+                            <tr>
+                                <td>U (for units)</td>
+                                <td>Write "units"</td>
+                            </tr>
+                            <tr>
+                                <td>IU</td>
+                                <td>Write "International Units"</td>
+                            </tr>
+                            <tr>
+                                <td>Q.D., Q.O.D.</td>
+                                <td>Write "daily" or "every other day"</td>
+                            </tr>
+                            <tr>
+                                <td>Trailing zero (1.0 mg)</td>
+                                <td>Write "1 mg"</td>
+                            </tr>
+                            <tr>
+                                <td>MS</td>
+                                <td>Write "morphine sulfate"</td>
+                            </tr>
+                            <tr>
+                                <td>μg</td>
+                                <td>Write "mcg"</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 10: AVPU Scale -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">AVPU Scale</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Consciousness Assessment</h3>
+                            <p class="mb-4">AVPU is a rapid neurological assessment tool used to quickly assess a patient's level of consciousness:</p>
+                            
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Letter</th>
+                                    <th>Meaning</th>
+                                    <th>Assessment</th>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">A</td>
+                                    <td>Alert</td>
+                                    <td>Patient is fully awake and responsive</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">V</td>
+                                    <td>Verbal</td>
+                                    <td>Patient responds to voice</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">P</td>
+                                    <td>Pain</td>
+                                    <td>Patient responds only to painful stimuli</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">U</td>
+                                    <td>Unresponsive</td>
+                                    <td>Patient does not respond to voice or pain</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for usage guidelines</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Using the AVPU Scale</h3>
+                        
+                        <h4 class="font-medium">Assessment Technique</h4>
+                        <ol class="list-decimal pl-5 mb-4">
+                            <li>Check if patient is <span class="font-medium">Alert</span> - observe if eyes open spontaneously and if patient is aware of surroundings</li>
+                            <li>If not alert, assess if patient responds to <span class="font-medium">Verbal</span> stimuli - speak loudly, use patient's name</li>
+                            <li>If no response to verbal, assess response to <span class="font-medium">Pain</span> - apply central stimulus (trapezius squeeze or sternal rub)</li>
+                            <li>If no response to pain, patient is <span class="font-medium">Unresponsive</span></li>
+                        </ol>
+                        
+                        <h4 class="font-medium">Clinical Significance</h4>
+                        <table class="accessible-table">
+                            <tr>
+                                <th>AVPU</th>
+                                <th>Approximate GCS</th>
+                                <th>Action</th>
+                            </tr>
+                            <tr>
+                                <td>A</td>
+                                <td>15</td>
+                                <td>Continue monitoring</td>
+                            </tr>
+                            <tr>
+                                <td>V</td>
+                                <td>12-13</td>
+                                <td>Assess for causes, increase monitoring</td>
+                            </tr>
+                            <tr>
+                                <td>P</td>
+                                <td>8-9</td>
+                                <td>Medical emergency, consider airway management</td>
+                            </tr>
+                            <tr>
+                                <td>U</td>
+                                <td>3</td>
+                                <td>Critical, secure airway, rapid intervention</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p class="font-medium">Important Notes:</p>
+                            <ul class="list-disc pl-5">
+                                <li>AVPU is a quick assessment tool, not a substitute for GCS</li>
+                                <li>A drop in AVPU score requires immediate attention</li>
+                                <li>Document the time of assessment with the AVPU result</li>
+                                <li>Any patient responding only to pain (P) or unresponsive (U) needs urgent medical attention</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 11: Respiratory Characteristics -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Respiratory Characteristics</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Normal Respiratory Parameters</h3>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Normal Range (Adult)</th>
+                                </tr>
+                                <tr>
+                                    <td>Respiratory Rate</td>
+                                    <td>12-20 breaths/min</td>
+                                </tr>
+                                <tr>
+                                    <td>Oxygen Saturation (SpO₂)</td>
+                                    <td>≥ 95%</td>
+                                </tr>
+                                <tr>
+                                    <td>Breathing Pattern</td>
+                                    <td>Regular, even, effortless</td>
+                                </tr>
+                                <tr>
+                                    <td>Chest Movement</td>
+                                    <td>Symmetrical expansion</td>
+                                </tr>
+                                <tr>
+                                    <td>Depth</td>
+                                    <td>Normal tidal volume</td>
+                                </tr>
+                                <tr>
+                                    <td>Breath Sounds</td>
+                                    <td>Clear and equal bilaterally</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for abnormal patterns</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Abnormal Breathing Patterns</h3>
+                        <table class="accessible-table">
+                            <tr>
+                                <th>Pattern</th>
+                                <th>Description</th>
+                                <th>Common Causes</th>
+                            </tr>
+                            <tr>
+                                <td>Tachypnea</td>
+                                <td>Rapid breathing >20/min</td>
+                                <td>Fever, pain, anxiety, respiratory disorders</td>
+                            </tr>
+                            <tr>
+                                <td>Bradypnea</td>
+                                <td>Slow breathing <12/min</td>
+                                <td>CNS depression, drug overdose</td>
+                            </tr>
+                            <tr>
+                                <td>Kussmaul</td>
+                                <td>Deep, rapid breathing</td>
+                                <td>Metabolic acidosis, DKA</td>
+                            </tr>
+                            <tr>
+                                <td>Cheyne-Stokes</td>
+                                <td>Gradually increasing then decreasing depth with periods of apnea</td>
+                                <td>CHF, brain injury</td>
+                            </tr>
+                            <tr>
+                                <td>Biot's</td>
+                                <td>Irregular depth with sudden pauses</td>
+                                <td>Increased ICP, meningitis</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-4 mb-2">Abnormal Breath Sounds</h3>
+                        <table class="accessible-table">
+                            <tr>
+                                <th>Sound</th>
+                                <th>Characteristics</th>
+                                <th>Indication</th>
+                            </tr>
+                            <tr>
+                                <td>Wheeze</td>
+                                <td>Musical, high-pitched</td>
+                                <td>Bronchospasm, asthma</td>
+                            </tr>
+                            <tr>
+                                <td>Crackles</td>
+                                <td>Discontinuous, non-musical sounds</td>
+                                <td>Fluid in alveoli, pneumonia</td>
+                            </tr>
+                            <tr>
+                                <td>Rhonchi</td>
+                                <td>Low-pitched, snoring-like</td>
+                                <td>Secretions in larger airways</td>
+                            </tr>
+                            <tr>
+                                <td>Stridor</td>
+                                <td>Harsh, high-pitched, inspiratory</td>
+                                <td>Upper airway obstruction</td>
+                            </tr>
+                            <tr>
+                                <td>Pleural Friction Rub</td>
+                                <td>Grating, leathery sound</td>
+                                <td>Pleural inflammation</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 12: PMS Test -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">PMS Assessment</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Peripheral Neurovascular Assessment</h3>
+                            <p class="mb-3">PMS stands for Pulse, Motor function, and Sensory function - essential components for limb assessment.</p>
+                            
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Assessment</th>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">P - Pulse</td>
+                                    <td>
+                                        <ul class="list-disc pl-5">
+                                            <li>Presence/absence</li>
+                                            <li>Quality (strong, weak, bounding)</li>
+                                            <li>Rhythm (regular, irregular)</li>
+                                            <li>Rate</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">M - Motor</td>
+                                    <td>
+                                        <ul class="list-disc pl-5">
+                                            <li>Movement ability</li>
+                                            <li>Strength (against resistance)</li>
+                                            <li>Range of motion</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">S - Sensory</td>
+                                    <td>
+                                        <ul class="list-disc pl-5">
+                                            <li>Light touch sensation</li>
+                                            <li>Pain perception</li>
+                                            <li>Temperature discrimination</li>
+                                            <li>Proprioception</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for assessment technique</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Upper Limb Assessment</h3>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Pulse Points</th>
+                                <th>Motor Assessment</th>
+                                <th>Sensory Assessment</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul class="list-disc pl-5">
+                                        <li>Brachial</li>
+                                        <li>Radial</li>
+                                        <li>Ulnar</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-disc pl-5">
+                                        <li>Grip strength</li>
+                                        <li>Finger abduction/adduction</li>
+                                        <li>Wrist flexion/extension</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-disc pl-5">
+                                        <li>Dermatomes C5-T1</li>
+                                        <li>Light touch test</li>
+                                        <li>Sharp/dull discrimination</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-4 mb-2">Lower Limb Assessment</h3>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Pulse Points</th>
+                                <th>Motor Assessment</th>
+                                <th>Sensory Assessment</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <ul class="list-disc pl-5">
+                                        <li>Femoral</li>
+                                        <li>Popliteal</li>
+                                        <li>Dorsalis pedis</li>
+                                        <li>Posterior tibial</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-disc pl-5">
+                                        <li>Ankle dorsiflexion/plantar flexion</li>
+                                        <li>Knee flexion/extension</li>
+                                        <li>Hip movement</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <ul class="list-disc pl-5">
+                                        <li>Dermatomes L2-S1</li>
+                                        <li>Light touch test</li>
+                                        <li>Vibration sense (tuning fork)</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-4 mb-2">When to Perform PMS</h3>
+                        <ul class="list-disc pl-5">
+                            <li>Post-orthopedic surgery or procedures</li>
+                            <li>Fractures with casts or splints</li>
+                            <li>Suspected nerve injury</li>
+                            <li>Vascular compromise</li>
+                            <li>Trauma to extremities</li>
+                            <li>Burns to extremities</li>
+                        </ul>
+                        
+                        <p class="mt-3 text-sm text-red-600 font-medium">Report immediately if: absent pulse, severe pain, color changes, decreased sensation, inability to move, or compartment syndrome suspected.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 13: SBAR Communication -->
+            <div class="card-container" data-category="communication">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">SBAR Communication</h2>
+                            <div class="card-category">Communication</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">SBAR Framework</h3>
+                            <p class="mb-3">Structured communication tool for effective handovers and reporting:</p>
+                            
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">S - Situation</td>
+                                    <td>Brief statement of the current situation or problem</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">B - Background</td>
+                                    <td>Relevant clinical background or context</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">A - Assessment</td>
+                                    <td>Your analysis and considerations of the situation</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">R - Recommendation</td>
+                                    <td>Your suggestion for what needs to be done</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for SBAR examples</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">SBAR Example: Deteriorating Patient</h3>
+                        
+                        <p class="mb-1"><span class="font-medium">Situation:</span> "Dr. Lee, I'm calling about Mr. Tan in Bed 4. His oxygen saturation has dropped to 88% on room air and he's becoming more short of breath."</p>
+                        
+                        <p class="mb-1"><span class="font-medium">Background:</span> "Mr. Tan is a 68-year-old man admitted yesterday with pneumonia. He was on 2L oxygen via nasal cannula with SpO₂ 95%. He has a history of COPD and diabetes. His last set of vitals 30 minutes ago showed temperature 38.2°C, HR 112, BP 135/85, RR 24."</p>
+                        
+                        <p class="mb-1"><span class="font-medium">Assessment:</span> "I think he's experiencing respiratory distress related to his pneumonia. His work of breathing has increased, and he's using accessory muscles. He's also becoming anxious and agitated."</p>
+                        
+                        <p class="mb-3"><span class="font-medium">Recommendation:</span> "I'd like you to see him now and consider increasing his oxygen therapy. He may need arterial blood gases and possibly chest physiotherapy or nebulization."</p>
+                        
+                        <h3 class="font-medium text-lg mt-4 mb-2">Tips for Effective SBAR</h3>
+                        <ul class="list-disc pl-5">
+                            <li>Be concise and stick to relevant information</li>
+                            <li>Prepare your SBAR before contacting the provider</li>
+                            <li>Have patient information and vital signs ready</li>
+                            <li>Clearly identify the reason for communication</li>
+                            <li>Document the SBAR communication and response</li>
+                            <li>Use SBAR in emergency situations to ensure clarity</li>
+                            <li>Be specific about when you need a response</li>
+                        </ul>
+                        
+                        <p class="mt-3 text-sm text-gray-600">Note: SBAR is a standard communication tool used in all Singapore healthcare institutions to improve patient safety and reduce communication errors.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 14: Common Medications -->
+            <div class="card-container" data-category="medications">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Common Medications in Singapore</h2>
+                            <div class="card-category">Medications</div>
+                        </div>
+                        <div class="card-content overflow-y-auto" style="max-height: 300px;">
+                            <h3 class="font-medium text-lg mb-2">Analgesics</h3>
+                            <table class="accessible-table text-sm">
+                                <tr>
+                                    <th>Generic Name</th>
+                                    <th>Common Brand</th>
+                                    <th>Use/Notes</th>
+                                </tr>
+                                <tr>
+                                    <td>Paracetamol</td>
+                                    <td>Panadol</td>
+                                    <td>Mild-moderate pain, fever</td>
+                                </tr>
+                                <tr>
+                                    <td>Tramadol</td>
+                                    <td>Ultram</td>
+                                    <td>Moderate-severe pain</td>
+                                </tr>
+                                <tr>
+                                    <td>Morphine</td>
+                                    <td>-</td>
+                                    <td>Severe pain, controlled drug</td>
+                                </tr>
+                            </table>
+                            
+                            <h3 class="font-medium text-lg mt-3 mb-2">Antibiotics</h3>
+                            <table class="accessible-table text-sm">
+                                <tr>
+                                    <th>Generic Name</th>
+                                    <th>Common Brand</th>
+                                    <th>Use/Notes</th>
+                                </tr>
+                                <tr>
+                                    <td>Amoxicillin</td>
+                                    <td>Amoxil</td>
+                                    <td>Respiratory/urinary infections</td>
+                                </tr>
+                                <tr>
+                                    <td>Ceftriaxone</td>
+                                    <td>Rocephin</td>
+                                    <td>Broad-spectrum, IV</td>
+                                </tr>
+                                <tr>
+                                    <td>Ciprofloxacin</td>
+                                    <td>Ciprobay</td>
+                                    <td>Urinary/GI infections</td>
+                                </tr>
+                            </table>
+                            
+                            <h3 class="font-medium text-lg mt-3 mb-2">Cardiovascular</h3>
+                            <table class="accessible-table text-sm">
+                                <tr>
+                                    <th>Generic Name</th>
+                                    <th>Common Brand</th>
+                                    <th>Use/Notes</th>
+                                </tr>
+                                <tr>
+                                    <td>Amlodipine</td>
+                                    <td>Norvasc</td>
+                                    <td>Hypertension</td>
+                                </tr>
+                                <tr>
+                                    <td>Atenolol</td>
+                                    <td>Tenormin</td>
+                                    <td>Hypertension, angina</td>
+                                </tr>
+                                <tr>
+                                    <td>Simvastatin</td>
+                                    <td>Zocor</td>
+                                    <td>Hyperlipidemia</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for more medications</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Respiratory Medications</h3>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Generic Name</th>
+                                <th>Common Brand</th>
+                                <th>Use/Notes</th>
+                            </tr>
+                            <tr>
+                                <td>Salbutamol</td>
+                                <td>Ventolin</td>
+                                <td>Bronchodilator for asthma/COPD</td>
+                            </tr>
+                            <tr>
+                                <td>Fluticasone</td>
+                                <td>Flixotide</td>
+                                <td>Inhaled corticosteroid</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-3 mb-2">Antidiabetics</h3>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Generic Name</th>
+                                <th>Common Brand</th>
+                                <th>Use/Notes</th>
+                            </tr>
+                            <tr>
+                                <td>Metformin</td>
+                                <td>Glucophage</td>
+                                <td>First-line for Type 2 diabetes</td>
+                            </tr>
+                            <tr>
+                                <td>Insulin (Regular)</td>
+                                <td>Actrapid</td>
+                                <td>Short-acting insulin</td>
+                            </tr>
+                            <tr>
+                                <td>Insulin (Lantus)</td>
+                                <td>Lantus</td>
+                                <td>Long-acting insulin</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-3 mb-2">Anticoagulants</h3>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Generic Name</th>
+                                <th>Common Brand</th>
+                                <th>Use/Notes</th>
+                            </tr>
+                            <tr>
+                                <td>Warfarin</td>
+                                <td>Coumadin</td>
+                                <td>Requires INR monitoring</td>
+                            </tr>
+                            <tr>
+                                <td>Enoxaparin</td>
+                                <td>Clexane</td>
+                                <td>Low molecular weight heparin</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mt-3 mb-2">Important Nursing Considerations</h3>
+                        <ul class="list-disc pl-5 text-sm">
+                            <li>Always check for drug allergies before administration</li>
+                            <li>Verify the 7 rights of medication administration</li>
+                            <li>Be aware of common drug interactions</li>
+                            <li>Monitor for adverse effects</li>
+                            <li>Know antidotes for high-risk medications</li>
+                            <li>Double-check high-alert medications with another nurse</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 15: Wound Reporting -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Wound Assessment</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Wound Assessment Parameters</h3>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Assessment Points</th>
+                                </tr>
+                                <tr>
+                                    <td>Location</td>
+                                    <td>Anatomical site</td>
+                                </tr>
+                                <tr>
+                                    <td>Size</td>
+                                    <td>Length, width, depth (cm)</td>
+                                </tr>
+                                <tr>
+                                    <td>Wound Bed</td>
+                                    <td>Tissue type: granulation, slough, necrotic</td>
+                                </tr>
+                                <tr>
+                                    <td>Exudate</td>
+                                    <td>Amount, color, consistency, odor</td>
+                                </tr>
+                                <tr>
+                                    <td>Surrounding Skin</td>
+                                    <td>Intact, macerated, erythema, edema</td>
+                                </tr>
+                                <tr>
+                                    <td>Pain</td>
+                                    <td>Pain score during and between dressing changes</td>
+                                </tr>
+                                <tr>
+                                    <td>Infection Signs</td>
+                                    <td>Erythema, warmth, swelling, purulent discharge</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for documentation guidelines</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Wound Documentation Guidelines</h3>
+                        
+                        <h4 class="font-medium">TIME Framework for Wound Assessment</h4>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Component</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td>T - Tissue</td>
+                                <td>Type of tissue in wound bed (% of each)</td>
+                            </tr>
+                            <tr>
+                                <td>I - Infection/Inflammation</td>
+                                <td>Signs of infection or inflammation</td>
+                            </tr>
+                            <tr>
+                                <td>M - Moisture Balance</td>
+                                <td>Level of exudate and moisture</td>
+                            </tr>
+                            <tr>
+                                <td>E - Edge of Wound</td>
+                                <td>Status of wound edges and surrounding skin</td>
+                            </tr>
+                        </table>
+                        
+                        <h4 class="font-medium mt-4">Wound Exudate Classification</h4>
+                        <table class="accessible-table text-sm">
+                            <tr>
+                                <th>Amount</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td>None</td>
+                                <td>Wound bed dry</td>
+                            </tr>
+                            <tr>
+                                <td>Minimal</td>
+                                <td>Wound bed moist, no measurable exudate</td>
+                            </tr>
+                            <tr>
+                                <td>Moderate</td>
+                                <td>Wound bed wet, drainage involves ≤ 25% of dressing</td>
+                            </tr>
+                            <tr>
+                                <td>Heavy</td>
+                                <td>Wound bed saturated, drainage involves > 25% of dressing</td>
+                            </tr>
+                        </table>
+                        
+                        <h4 class="font-medium mt-4">Wound Color Classification</h4>
+                        <ul class="pl-5 mb-4">
+                            <li><span class="font-medium text-red-600">Red:</span> Granulation tissue, healthy</li>
+                            <li><span class="font-medium text-yellow-600">Yellow:</span> Slough, fibrinous tissue</li>
+                            <li><span class="font-medium text-black">Black:</span> Necrotic tissue, eschar</li>
+                        </ul>
+                        
+                        <p class="text-sm text-gray-600 mt-2">In Singapore, wound care documentation should follow the institutional protocol and be updated at each dressing change or at least every 48-72 hours for chronic wounds. Photos may be taken with patient consent as per facility policy.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 16: Bristol Stool Chart -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Bristol Stool Chart</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Stool Form Classification</h3>
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Indication</th>
+                                </tr>
+                                <tr>
+                                    <td>Type 1</td>
+                                    <td>Separate hard lumps, like nuts</td>
+                                    <td>Severe constipation</td>
+                                </tr>
+                                <tr>
+                                    <td>Type 2</td>
+                                    <td>Sausage-shaped but lumpy</td>
+                                    <td>Mild constipation</td>
+                                </tr>
+                                <tr>
+                                    <td>Type 3</td>
+                                    <td>Sausage-like with cracks on surface</td>
+                                    <td>Normal</td>
+                                </tr>
+                                <tr>
+                                    <td>Type 4</td>
+                                    <td>Sausage or snake-like, smooth and soft</td>
+                                    <td>Normal (ideal)</td>
+                                </tr>
+                                <tr>
+                                    <td>Type 5</td>
+                                    <td>Soft blobs with clear-cut edges</td>
+                                    <td>Lacking fiber</td>
+                                </tr>
+                                <tr>
+                                    <td>Type 6</td>
+                                    <td>Fluffy pieces with ragged edges, mushy</td>
+                                    <td>Mild diarrhea</td>
+                                </tr>
+                                <tr>
+                                    <td>Type 7</td>
+                                    <td>Watery, no solid pieces, entirely liquid</td>
+                                    <td>Severe diarrhea</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for clinical application</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Clinical Applications</h3>
+                        
+                        <table class="accessible-table mb-4">
+                            <tr>
+                                <th>Classification</th>
+                                <th>Clinical Significance</th>
+                            </tr>
+                            <tr>
+                                <td>Types 1-2</td>
+                                <td>
+                                    <ul class="list-disc pl-4">
+                                        <li>Constipation</li>
+                                        <li>Increased risk for impaction</li>
+                                        <li>May indicate need for laxatives</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Types 3-4</td>
+                                <td>
+                                    <ul class="list-disc pl-4">
+                                        <li>Normal bowel function</li>
+                                        <li>Ideal stool consistency</li>
+                                        <li>Easy to pass</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Types 5-7</td>
+                                <td>
+                                    <ul class="list-disc pl-4">
+                                        <li>Progressively more diarrhea</li>
+                                        <li>Increased risk for dehydration</li>
+                                        <li>May indicate infection, malabsorption, or medication side effects</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mb-2">Documentation Guidelines</h3>
+                        <p class="mb-2">Document the following information:</p>
+                        <ul class="list-disc pl-5">
+                            <li>Bristol Stool Chart type (1-7)</li>
+                            <li>Frequency of bowel movements</li>
+                            <li>Color of stool</li>
+                            <li>Presence of blood, mucus, or undigested food</li>
+                            <li>Associated symptoms (pain, bloating, straining)</li>
+                            <li>Changes from patient's normal pattern</li>
+                        </ul>
+                        
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p class="font-medium">Nursing Interventions:</p>
+                            <ul class="list-disc pl-5">
+                                <li>For Types 1-2: Encourage fluid intake, fiber-rich diet, mobility</li>
+                                <li>For Types 5-7: Monitor for dehydration, administer prescribed medications, document intake and output</li>
+                                <li>Report significant changes in stool pattern to the physician</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 17: Documentation Guidelines -->
+            <div class="card-container" data-category="documentation">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">Documentation Guidelines</h2>
+                            <div class="card-category">Documentation</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">General Principles of Documentation</h3>
+                            <ul class="list-disc pl-5 mb-4">
+                                <li>Be factual, objective, and accurate</li>
+                                <li>Document in a timely manner</li>
+                                <li>Follow institutional policies and formats</li>
+                                <li>Use only approved abbreviations</li>
+                                <li>Sign all entries with name and designation</li>
+                                <li>Date and time all entries</li>
+                                <li>Ensure legibility and correct grammar</li>
+                                <li>Document only what you observe or do</li>
+                                <li>Never leave blank spaces or lines</li>
+                                <li>Correct errors properly according to policy</li>
+                            </ul>
+                            
+                            <h3 class="font-medium text-lg mb-2">What to Document</h3>
+                            <ul class="list-disc pl-5">
+                                <li>Patient assessments</li>
+                                <li>Interventions performed</li>
+                                <li>Patient responses to care</li>
+                                <li>Changes in condition</li>
+                                <li>Medications administered</li>
+                                <li>Patient education provided</li>
+                                <li>Communication with healthcare team</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">Flip card for documentation specifics</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Documentation Format - DAR</h3>
+                        <table class="accessible-table mb-4">
+                            <tr>
+                                <th>Component</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">D - Data</td>
+                                <td>Objective and subjective information collected</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">A - Action</td>
+                                <td>Interventions performed by the nurse</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">R - Response</td>
+                                <td>Patient's response to interventions</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mb-2">Color Coding for Documentation</h3>
+                        <p class="mb-3">Singapore hospitals often use color-coded documentation:</p>
+                        <ul class="list-disc pl-5 mb-4">
+                            <li><span class="font-medium text-blue-600">Blue ink:</span> Day shift (7am-3pm)</li>
+                            <li><span class="font-medium text-green-600">Green ink:</span> Evening shift (3pm-11pm)</li>
+                            <li><span class="font-medium text-red-600">Red ink:</span> Night shift (11pm-7am)</li>
+                            <li><span class="font-medium text-black">Black ink:</span> May be used across all shifts in some facilities</li>
+                        </ul>
+                        
+                        <h3 class="font-medium text-lg mb-2">Legal Considerations</h3>
+                        <ul class="list-disc pl-5">
+                            <li>Documentation is a legal record</li>
+                            <li>Adhere to Singapore Nursing Board guidelines</li>
+                            <li>Follow the "if it's not documented, it wasn't done" principle</li>
+                            <li>Properly document all unusual occurrences or incidents</li>
+                            <li>Document patient refusals of care</li>
+                            <li>Never alter records after the fact</li>
+                            <li>Use quotation marks for direct patient statements</li>
+                        </ul>
+                        
+                        <p class="mt-4 text-sm text-gray-600">Note: Electronic Health Records (EHR) are increasingly common in Singapore healthcare institutions. Ensure you are properly trained on your facility's EHR system.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 18: OLD CART Assessment -->
+            <div class="card-container" data-category="assessments">
+                <div class="card">
+                    <div class="card-front">
+                        <div class="card-header">
+                            <h2 class="card-title text-xl">OLD CART Assessment</h2>
+                            <div class="card-category">Assessments</div>
+                        </div>
+                        <div class="card-content">
+                            <h3 class="font-medium text-lg mb-2">Symptom Assessment Framework</h3>
+                            <p class="mb-3">OLD CART is a mnemonic used to assess symptoms systematically:</p>
+                            
+                            <table class="accessible-table">
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Assessment Question</th>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">O - Onset</td>
+                                    <td>When did the symptom begin? Sudden or gradual?</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">L - Location</td>
+                                    <td>Where is the symptom? Does it radiate?</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">D - Duration</td>
+                                    <td>How long does the symptom last?</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">C - Characteristics</td>
+                                    <td>How would you describe the symptom?</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">A - Aggravating Factors</td>
+                                    <td>What makes the symptom worse?</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">R - Relieving Factors</td>
+                                    <td>What makes the symptom better?</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">T - Treatment</td>
+                                    <td>What treatments have you tried?</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="card-footer">Flip card for clinical examples</div>
+                    </div>
+                    <div class="card-back">
+                        <h3 class="font-medium text-lg mb-2">Example: Chest Pain Assessment</h3>
+                        
+                        <table class="accessible-table mb-4">
+                            <tr>
+                                <th>Component</th>
+                                <th>Sample Documentation</th>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Onset</td>
+                                <td>"Started suddenly while watching TV 2 hours ago"</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Location</td>
+                                <td>"Central chest pain radiating to left arm and jaw"</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Duration</td>
+                                <td>"Continuous pain for past 2 hours"</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Characteristics</td>
+                                <td>"Crushing, heavy pressure sensation, 8/10 intensity"</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Aggravating Factors</td>
+                                <td>"Worse with movement and deep breathing"</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Relieving Factors</td>
+                                <td>"No relief with rest or position change"</td>
+                            </tr>
+                            <tr>
+                                <td class="font-medium">Treatment</td>
+                                <td>"Took 2 antacid tablets without relief"</td>
+                            </tr>
+                        </table>
+                        
+                        <h3 class="font-medium text-lg mb-2">Additional Assessment Areas</h3>
+                        <ul class="list-disc pl-5 mb-4">
+                            <li><span class="font-medium">S - Severity:</span> Pain scale rating (0-10)</li>
+                            <li><span class="font-medium">A - Associated Symptoms:</span> Other symptoms occurring simultaneously</li>
+                            <li><span class="font-medium">T - Timing:</span> Pattern, frequency, time of day</li>
+                        </ul>
+                        
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p class="font-medium">Tips for Effective Assessment:</p>
+                            <ul class="list-disc pl-5">
+                                <li>Use open-ended questions</li>
+                                <li>Document using patient's own words when appropriate</li>
+                                <li>Complete all components of OLD CART</li>
+                                <li>Use OLD CART for all symptom assessments for consistency</li>
+                                <li>Focus on changes from baseline or previous assessments</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white py-6 shadow-inner mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-600">Nursing Reference Cards for Bhutanese Students in Singapore</p>
+            <p class="text-gray-500 text-sm mt-1">Designed to support nursing internships and clinical practice</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const cardsContainer = document.getElementById('cardsContainer');
+            const cards = cardsContainer.querySelectorAll('.card-container');
+            const filterButtons = document.querySelectorAll('.btn-filter');
+            
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                cards.forEach(card => {
+                    const cardTitle = card.querySelector('.card-title').textContent.toLowerCase();
+                    const cardContent = card.querySelector('.card-content').textContent.toLowerCase();
+                    const cardBackContent = card.querySelector('.card-back').textContent.toLowerCase();
+                    
+                    if (cardTitle.includes(searchTerm) || cardContent.includes(searchTerm) || cardBackContent.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Category filtering
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    
+                    // Toggle active class
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter cards
+                    if (category === 'all') {
+                        cards.forEach(card => card.style.display = 'block');
+                    } else {
+                        cards.forEach(card => {
+                            if (card.getAttribute('data-category') === category) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Touch-friendly card flipping for mobile
+            cards.forEach(cardContainer => {
+                const card = cardContainer.querySelector('.card');
+                
+                // Detect touch devices
+                if ('ontouchstart' in window || navigator.maxTouchPoints) {
+                    card.addEventListener('click', function(e) {
+                        this.style.transform = this.style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)';
+                    });
+                }
+                
+                // For non-touch devices, we'll use the CSS hover
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    window.scrollBy({
+                        top: 500,
+                        behavior: 'smooth'
+                    });
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    window.scrollBy({
+                        top: -500,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+            
+            // Optimize for PDF export - expand all cards
+            if (window.matchMedia && window.matchMedia('print').matches) {
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.transform = 'none';
+                });
+                
+                document.querySelectorAll('.card-back').forEach(back => {
+                    back.style.transform = 'none';
+                    back.style.position = 'relative';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
