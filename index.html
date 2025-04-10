@@ -14,6 +14,7 @@
             --accent-color: #60a5fa; /* Light Blue */
             --light-color: #f0f9ff; /* Very Light Blue */
             --dark-color: #1e293b; /* Dark Slate */
+            --header-hidden-padding: 1rem; /* Define padding when header is hidden */
         }
 
         body {
@@ -306,7 +307,6 @@
             </div>
         </div>
     </header>
-
 
     <main class="container mx-auto px-4 mb-12">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cardsContainer">
@@ -2202,6 +2202,7 @@
     </footer>
 
       
+
     <script>
         // State variable to track if the header was manually hidden
         let isHeaderManuallyHidden = false;
@@ -2210,13 +2211,17 @@
         function setBodyPadding() {
             const header = document.getElementById('mainHeader');
             const body = document.body;
+            const headerHiddenPadding = getComputedStyle(document.documentElement).getPropertyValue('--header-hidden-padding').trim() || '1rem'; // Get padding value from CSS variable
+
             if (header) {
                 const headerHeight = header.offsetHeight;
-                // Apply padding only if the header is currently visible (not translated)
+                // Apply padding based on header visibility
                 if (!header.classList.contains('-translate-y-full')) {
+                     // Header is VISIBLE: Use its height for padding
                      body.style.paddingTop = `${headerHeight}px`;
                 } else {
-                     body.style.paddingTop = '0px'; // No padding if header is hidden
+                     // Header is HIDDEN: Use the fixed padding value
+                     body.style.paddingTop = headerHiddenPadding;
                 }
             }
         }
@@ -2229,9 +2234,13 @@
                 if (header.classList.contains('-translate-y-full')) {
                     // Header is hidden: Add class to button, icon should rotate via CSS
                     toggleBtn.classList.add('header-hidden');
+                    toggleBtn.setAttribute('aria-label', 'Show Header'); // Update accessibility label
+                    toggleBtn.setAttribute('aria-expanded', 'false');
                 } else {
                     // Header is visible: Remove class from button, icon resets via CSS
                     toggleBtn.classList.remove('header-hidden');
+                    toggleBtn.setAttribute('aria-label', 'Hide Header'); // Update accessibility label
+                    toggleBtn.setAttribute('aria-expanded', 'true');
                 }
             }
         }
@@ -2248,16 +2257,20 @@
             const headerToggleBtn = document.getElementById('headerToggleBtn'); // Reference the button
             const body = document.body;
 
-            // --- Initial Body Padding Calculation ---
-            setBodyPadding();
-            setTimeout(setBodyPadding, 100); // Recalculate after delay
-            updateToggleButtonState(); // Set initial button style/icon state
+            // --- Initial Body Padding Calculation & Button State ---
+            // Calculate initial padding *after* ensuring header height is stable
+            // Use requestAnimationFrame for better timing after layout shifts
+            requestAnimationFrame(() => {
+                setBodyPadding();
+                updateToggleButtonState(); // Set initial button style/icon state
+            });
 
 
             // --- Search Functionality ---
-            if (searchInput && cardsContainer) {
+            if (searchInput && cardsContainer && cards.length > 0) {
                 searchInput.addEventListener('input', function() {
                     const searchTerm = this.value.toLowerCase().trim();
+                    // Reset filters when searching
                     filterButtons.forEach(btn => {
                         btn.classList.remove('active', 'bg-primary-color', 'text-white');
                         btn.classList.add('bg-gray-200');
@@ -2267,30 +2280,34 @@
                         }
                     });
 
+                    // Filter cards based on search term
                     cards.forEach(cardContainer => {
                         const cardTitleElement = cardContainer.querySelector('.card-title');
-                        const cardContentElements = cardContainer.querySelectorAll('.card-content, .card-back');
+                        const cardContentElements = cardContainer.querySelectorAll('.card-content, .card-back'); // Search both front and back
                         let textToSearch = cardTitleElement ? cardTitleElement.textContent.toLowerCase() : '';
                         cardContentElements.forEach(el => {
                              if (el) textToSearch += el.textContent.toLowerCase();
                         });
 
-                        if (textToSearch.includes(searchTerm)) {
-                             cardContainer.style.display = 'block';
-                        } else {
-                             cardContainer.style.display = 'none';
-                        }
+                        // Show or hide card based on search match
+                        const isMatch = textToSearch.includes(searchTerm);
+                        cardContainer.style.display = isMatch ? 'block' : 'none';
                     });
                 });
+            } else {
+                 if (!searchInput) console.warn("Search input not found.");
+                 if (!cardsContainer) console.warn("Cards container not found.");
+                 if (cards.length === 0) console.warn("No cards found in the container.");
             }
 
             // --- Category Filtering ---
-            if (filterButtons.length > 0 && cardsContainer) {
+            if (filterButtons.length > 0 && cardsContainer && cards.length > 0) {
                 filterButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         const category = this.getAttribute('data-category');
-                        if (searchInput) searchInput.value = '';
+                        if (searchInput) searchInput.value = ''; // Clear search on filter click
 
+                        // Update button styles
                         filterButtons.forEach(btn => {
                             btn.classList.remove('active', 'bg-primary-color', 'text-white');
                             btn.classList.add('bg-gray-200');
@@ -2298,20 +2315,22 @@
                         this.classList.remove('bg-gray-200');
                         this.classList.add('active', 'bg-primary-color', 'text-white');
 
+                        // Filter cards based on category
                         cards.forEach(cardContainer => {
                             const cardCategory = cardContainer.getAttribute('data-category');
-                            if (category === 'all' || cardCategory === category) {
-                                cardContainer.style.display = 'block';
-                            } else {
-                                cardContainer.style.display = 'none';
-                            }
+                            const showCard = (category === 'all' || cardCategory === category);
+                            cardContainer.style.display = showCard ? 'block' : 'none';
                         });
                     });
                 });
+                // Activate the 'All' button initially if it exists
                 const initialActiveButton = document.querySelector('.btn-filter[data-category="all"]');
                 if (initialActiveButton) {
+                    // Use setTimeout to ensure it runs after initial setup
                     setTimeout(() => initialActiveButton.click(), 0);
                 }
+            } else {
+                 if (filterButtons.length === 0) console.warn("Filter buttons not found.");
             }
 
             // --- Click-to-Flip Card Logic ---
@@ -2320,89 +2339,102 @@
                     const card = cardContainer.querySelector('.card');
                     if (card) {
                          cardContainer.addEventListener('click', function(e) {
+                             // Prevent flip if clicking on interactive elements inside the card
                              if (e.target.closest('a, button, input, select, textarea')) return;
 
-                             // Experimental scrollbar click prevention
-                             if (e.offsetX > card.offsetWidth - 15) {
-                                 const cardFace = card.querySelector('.card-front:not([style*="transform: rotateY(180deg)"])') || card.querySelector('.card-back');
-                                 if (cardFace && cardFace.scrollHeight > cardFace.clientHeight) return;
+                             // Prevent flip if clicking on the scrollbar area (approximate)
+                             // Check if the click is within the last 15px of the card width
+                             const cardFace = card.querySelector('.card-front:not([style*="transform: rotateY(180deg)"])') || card.querySelector('.card-back');
+                             if (cardFace && e.offsetX > cardFace.offsetWidth - 15) {
+                                 // Check if the clicked face actually has a scrollbar (content taller than container)
+                                 if (cardFace.scrollHeight > cardFace.clientHeight) return;
                              }
 
+                             // Perform the flip
                              const isFlipped = card.style.transform.includes('rotateY(180deg)');
                              card.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
                          });
+                    } else {
+                        console.warn("Card element not found within container:", cardContainer);
                     }
                 });
             }
-
 
             // ***********************************************
             // *** START: Header Toggle & Scroll Logic ***
             // ***********************************************
             if (header && headerToggleBtn) {
                 let lastScrollTop = 0;
-                const delta = 5;
+                const delta = 5; // Minimum scroll distance to trigger hide/show
 
                 // --- Manual Header Toggle ---
                 headerToggleBtn.addEventListener('click', () => {
                     const isHidden = header.classList.toggle('-translate-y-full');
-                    isHeaderManuallyHidden = isHidden;
-                    setBodyPadding();
-                    updateToggleButtonState(); // Update button style/icon
+                    isHeaderManuallyHidden = isHidden; // Track manual state
+                    setBodyPadding(); // Adjust padding immediately
+                    updateToggleButtonState(); // Update button style/icon and aria attributes
                 });
 
                 // --- Scroll-Based Header Hiding ---
                 window.addEventListener('scroll', function() {
+                    // Don't auto-hide if header was manually hidden
+                    // if (isHeaderManuallyHidden) return;
+
                     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                     const headerHeight = header.offsetHeight;
 
+                    // Ignore small scroll movements
                     if (Math.abs(lastScrollTop - scrollTop) <= delta) return;
 
-                    // Scrolling Down
+                    // Scrolling Down & past the header height
                     if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
+                        // Hide header only if it's currently visible
                         if (!header.classList.contains('-translate-y-full')) {
                             header.classList.add('-translate-y-full');
-                            body.style.paddingTop = '0px';
-                            updateToggleButtonState(); // Update button style/icon
+                            setBodyPadding(); // Adjust padding
+                            updateToggleButtonState(); // Update button
                         }
                     }
-                    // Scrolling Up or Near Top
+                    // Scrolling Up or Near Top (within header height)
                     else if (scrollTop < lastScrollTop || scrollTop <= headerHeight) {
+                        // Show header only if it's currently hidden
                         if (header.classList.contains('-translate-y-full')) {
-                             header.classList.remove('-translate-y-full');
-                             setBodyPadding();
-                             updateToggleButtonState(); // Update button style/icon
-                             isHeaderManuallyHidden = false; // Reset manual state
+                             // Only auto-show if it wasn't manually hidden
+                             if (!isHeaderManuallyHidden) {
+                                 header.classList.remove('-translate-y-full');
+                                 setBodyPadding(); // Adjust padding
+                                 updateToggleButtonState(); // Update button
+                             }
                         }
                     }
 
-                    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+                    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
 
-                }, { passive: true });
+                }, { passive: true }); // Use passive listener for better scroll performance
 
-                // Add resize listener
+                // Add resize listener to recalculate padding if window size changes
                  window.addEventListener('resize', setBodyPadding);
 
-                 // Initial load check
-                 const initialScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                 if (initialScrollTop > header.offsetHeight && header.offsetHeight > 0) {
-                      if (!isHeaderManuallyHidden) {
+                 // Initial load check (run after a frame to ensure layout is stable)
+                 requestAnimationFrame(() => {
+                     const initialScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                     const headerHeight = header.offsetHeight;
+                     // If scrolled past header on load, hide it (unless manually shown before load)
+                     if (initialScrollTop > headerHeight && headerHeight > 0 && !isHeaderManuallyHidden) {
                           header.classList.add('-translate-y-full');
-                          body.style.paddingTop = '0px';
+                          setBodyPadding();
                           updateToggleButtonState();
-                      }
-                 } else if (header.offsetHeight > 0) {
-                     if (!isHeaderManuallyHidden) {
-                        setBodyPadding();
                      } else {
-                         body.style.paddingTop = '0px';
-                         updateToggleButtonState(); // Ensure button state is correct if loaded hidden
+                         // Ensure padding and button state are correct on load
+                         setBodyPadding();
+                         updateToggleButtonState();
                      }
-                 }
-                 lastScrollTop = initialScrollTop;
+                     lastScrollTop = initialScrollTop;
+                 });
+
 
             } else {
-                console.warn('Header element (#mainHeader) or Toggle Button (#headerToggleBtn) not found.');
+                console.warn('Header element (#mainHeader) or Toggle Button (#headerToggleBtn) not found. Header hiding/showing disabled.');
             }
             // ***********************************************
             // *** END: Header Toggle & Scroll Logic ***
@@ -2410,11 +2442,13 @@
 
         }); // End of DOMContentLoaded
 
-        // Recalculate padding on window load
-        window.addEventListener('load', setBodyPadding);
+        // Recalculate padding on window load as a fallback (e.g., for slow-loading fonts affecting header height)
+        window.addEventListener('load', () => {
+            // Use timeout to ensure it runs after other load/resize events
+            setTimeout(setBodyPadding, 50);
+        });
 
     </script>
 
 </body>
 </html>
-
