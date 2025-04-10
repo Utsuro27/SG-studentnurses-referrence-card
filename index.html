@@ -8,40 +8,39 @@
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
+:root {
             --primary-color: #1e3a8a;
             --secondary-color: #3b82f6;
             --accent-color: #60a5fa;
             --light-color: #f0f9ff;
             --dark-color: #1e293b;
         }
-        
+
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8fafc;
             color: #1e293b;
             position: relative;
         }
-        
+
         .card-container {
-            perspective: 1000px;
+            perspective: 1000px; /* Sets up the 3D space for the flip */
             height: 450px;
             margin-bottom: 30px;
         }
-        
+
         .card {
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
+            transition: transform 0.8s; /* Animation for the flip */
+            transform-style: preserve-3d; /* Enables 3D positioning for children */
             height: 100%;
-            position: relative;
+            position: relative; /* Context for absolute positioning of faces */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             cursor: pointer;
         }
-        
+
         .card-front, .card-back {
-            backface-visibility: hidden;
-            position: absolute;
+            position: absolute;         /* Stack faces on top of each other */
             top: 0;
             left: 0;
             width: 100%;
@@ -49,46 +48,51 @@
             border-radius: 12px;
             padding: 20px;
             overflow-y: auto;
+            -webkit-backface-visibility: hidden; /* Added: Safari/Chrome compatibility */
+            backface-visibility: hidden; /* Hides the back of the element when facing away */
         }
-        
+
         .card-front {
             background: linear-gradient(135deg, #fff, var(--light-color));
-            z-index: 2;
+            z-index: 2; /* Front face initially on top */
             display: flex;
             flex-direction: column;
+            /* No transform needed here, it's the default state */
         }
-        
+
         .card-back {
             background: linear-gradient(135deg, var(--light-color), #fff);
-            transform: rotateY(180deg);
-            z-index: 1;
+            transform: rotateY(180deg); /* Initially rotate the back face 180 degrees */
+            z-index: 1; /* Back face initially behind the front */
         }
-        
+
+        /* The hover effect targets the container, transforming the card inside it */
         .card-container:hover .card {
-            transform: rotateY(180deg);
+            transform: rotateY(180deg); /* Rotate the entire card on hover */
         }
-        
+
+        /* Rest of your styles... */
         .card-header {
             border-bottom: 2px solid var(--accent-color);
             margin-bottom: 15px;
             padding-bottom: 10px;
         }
-        
+
         .card-title {
             color: var(--primary-color);
             font-weight: 600;
         }
-        
+
         .card-category {
             font-size: 0.85rem;
             color: var(--secondary-color);
             margin-top: 2px;
         }
-        
+
         .card-content {
             flex: 1;
         }
-        
+
         .card-footer {
             font-size: 0.75rem;
             color: var(--dark-color);
@@ -97,39 +101,39 @@
             padding-top: 10px;
             text-align: right;
         }
-        
+
         .card table {
             width: 100%;
             border-collapse: collapse;
             margin: 10px 0;
             font-size: 0.9rem;
         }
-        
+
         .card th, .card td {
             border: 1px solid #e2e8f0;
             padding: 8px;
             text-align: left;
         }
-        
+
         .card th {
             background-color: #f1f5f9;
             font-weight: 500;
         }
-        
+
         .card ul, .card ol {
             padding-left: 20px;
             margin: 10px 0;
         }
-        
+
         .card li {
             margin-bottom: 5px;
         }
-        
+
         .section-title {
             position: relative;
             margin-bottom: 2rem;
         }
-        
+
         .section-title:after {
             content: '';
             position: absolute;
@@ -139,16 +143,16 @@
             height: 4px;
             background-color: var(--secondary-color);
         }
-        
+
         .btn-filter {
             transition: all 0.3s ease;
         }
-        
+
         .btn-filter.active {
             background-color: var(--primary-color);
             color: white;
         }
-        
+
         .category-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -158,32 +162,32 @@
             background-color: var(--accent-color);
             color: white;
         }
-        
+
         .card-scroll {
             overflow-x: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--secondary-color) #f1f5f9;
         }
-        
+
         .card-scroll::-webkit-scrollbar {
             height: 6px;
         }
-        
+
         .card-scroll::-webkit-scrollbar-track {
             background: #f1f5f9;
         }
-        
+
         .card-scroll::-webkit-scrollbar-thumb {
             background-color: var(--secondary-color);
             border-radius: 6px;
         }
-        
+
         .search-container {
             position: relative;
             max-width: 500px;
             margin: 0 auto;
         }
-        
+
         .search-icon {
             position: absolute;
             left: 12px;
@@ -191,7 +195,7 @@
             transform: translateY(-50%);
             color: #64748b;
         }
-        
+
         .search-input {
             padding-left: 40px;
             border-radius: 9999px;
@@ -199,48 +203,54 @@
             width: 100%;
             transition: all 0.3s ease;
         }
-        
+
         .search-input:focus {
             border-color: var(--secondary-color);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
             outline: none;
         }
-        
+
         @media print {
             .card-container {
                 page-break-inside: avoid;
                 margin-bottom: 20px;
             }
-            
+
             .search-container, .filter-buttons {
                 display: none;
             }
-            
+
             body {
                 background: white;
             }
-            
+
             .card {
                 box-shadow: none;
                 border: 1px solid #e2e8f0;
             }
-            
+
             .card-container .card {
-                transform: none !important;
+                transform: none !important; /* Ensure no transform in print */
             }
-            
+
             .card-back {
                 display: block;
-                transform: none;
-                position: relative;
+                transform: none; /* Ensure no transform in print */
+                position: relative; /* Change from absolute for print */
                 margin-top: 20px;
+                backface-visibility: visible; /* Make sure it's visible */
             }
-            
+
             .card-front {
-                position: relative;
+                position: relative; /* Change from absolute for print */
+                 backface-visibility: visible; /* Make sure it's visible */
+            }
+             /* Ensure no transition in print */
+            .card {
+                transition: none;
             }
         }
-        
+
         /* Override Tailwind for specific needs */
         .text-grad {
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
@@ -248,43 +258,43 @@
             background-clip: text;
             color: transparent;
         }
-        
+
         .singapore-pattern {
             background-color: #f8fafc;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e3a8a' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
-        
+
         /* Accessible table styles */
         .accessible-table {
             border-collapse: collapse;
             width: 100%;
             margin-bottom: 1rem;
         }
-        
+
         .accessible-table th,
         .accessible-table td {
             padding: 0.5rem;
             text-align: left;
             border: 1px solid #e2e8f0;
         }
-        
+
         .accessible-table th {
             background-color: #f1f5f9;
             font-weight: 600;
         }
-        
+
         .accessible-table tr:nth-child(even) {
             background-color: #f8fafc;
         }
-        
+
         .card-front::-webkit-scrollbar, .card-back::-webkit-scrollbar {
             width: 5px;
         }
-        
+
         .card-front::-webkit-scrollbar-track, .card-back::-webkit-scrollbar-track {
             background: #f1f5f9;
         }
-        
+
         .card-front::-webkit-scrollbar-thumb, .card-back::-webkit-scrollbar-thumb {
             background-color: var(--secondary-color);
             border-radius: 6px;
