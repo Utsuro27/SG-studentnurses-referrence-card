@@ -3,29 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nursing Reference Cards </title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Nursing Reference Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-:root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #3b82f6;
-            --accent-color: #60a5fa;
-            --light-color: #f0f9ff;
-            --dark-color: #1e293b;
+        :root {
+            --primary-color: #1e3a8a; /* Deep Blue */
+            --secondary-color: #3b82f6; /* Medium Blue */
+            --accent-color: #60a5fa; /* Light Blue */
+            --light-color: #f0f9ff; /* Very Light Blue */
+            --dark-color: #1e293b; /* Dark Slate */
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
-            position: relative;
+            background-color: #f8fafc; /* Light Gray background */
+            color: var(--dark-color);
+            position: relative; /* Needed for potential absolute positioning inside */
+            /* Removed fixed padding-top; will be set dynamically by JS */
         }
 
+        /* Ensure header has transition for smooth hide/show */
+        #mainHeader {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Card Container and Card Styling */
         .card-container {
             perspective: 1000px; /* Sets up the 3D space for the flip */
-            height: 450px;
+            height: 450px; /* Fixed height for the card container */
             margin-bottom: 30px;
         }
 
@@ -34,22 +41,35 @@
             transform-style: preserve-3d; /* Enables 3D positioning for children */
             height: 100%;
             position: relative; /* Context for absolute positioning of faces */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            border-radius: 12px; /* Rounded corners */
             cursor: pointer;
         }
 
         .card-front, .card-back {
-            position: absolute;         /* Stack faces on top of each other */
+            position: absolute; /* Stack faces on top of each other */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 12px;
+            border-radius: 12px; /* Match card rounding */
             padding: 20px;
-            overflow-y: auto;
-            -webkit-backface-visibility: hidden; /* Added: Safari/Chrome compatibility */
-            backface-visibility: hidden; /* Hides the back of the element when facing away */
+            overflow-y: auto; /* Allow scrolling within card faces */
+            -webkit-backface-visibility: hidden; /* Hide back face when not visible (Safari/Chrome) */
+            backface-visibility: hidden; /* Hide back face when not visible */
+            /* Custom scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-color) #f1f5f9;
+        }
+        .card-front::-webkit-scrollbar, .card-back::-webkit-scrollbar {
+            width: 5px;
+        }
+        .card-front::-webkit-scrollbar-track, .card-back::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .card-front::-webkit-scrollbar-thumb, .card-back::-webkit-scrollbar-thumb {
+            background-color: var(--secondary-color);
+            border-radius: 6px;
         }
 
         .card-front {
@@ -57,7 +77,6 @@
             z-index: 2; /* Front face initially on top */
             display: flex;
             flex-direction: column;
-            /* No transform needed here, it's the default state */
         }
 
         .card-back {
@@ -66,12 +85,16 @@
             z-index: 1; /* Back face initially behind the front */
         }
 
-        /* The hover effect targets the container, transforming the card inside it */
-        .card-container:hover .card {
-            transform: rotateY(180deg); /* Rotate the entire card on hover */
+        /* The hover effect targets the container, transforming the card inside it (for desktop) */
+        /* Disabled hover effect if touch is detected by JS */
+        @media (hover: hover) and (pointer: fine) {
+             .card-container:hover .card {
+                transform: rotateY(180deg); /* Rotate the entire card on hover */
+            }
         }
 
-        /* Rest of your styles... */
+
+        /* Card Content Styling */
         .card-header {
             border-bottom: 2px solid var(--accent-color);
             margin-bottom: 15px;
@@ -90,36 +113,41 @@
         }
 
         .card-content {
-            flex: 1;
+            flex: 1; /* Allows content to fill available space */
         }
 
         .card-footer {
             font-size: 0.75rem;
             color: var(--dark-color);
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e2e8f0; /* Light border */
             margin-top: 10px;
             padding-top: 10px;
             text-align: right;
         }
 
-        .card table {
+        /* Table Styling */
+        .accessible-table {
             width: 100%;
             border-collapse: collapse;
             margin: 10px 0;
             font-size: 0.9rem;
         }
 
-        .card th, .card td {
-            border: 1px solid #e2e8f0;
+        .accessible-table th, .accessible-table td {
+            border: 1px solid #e2e8f0; /* Light gray border */
             padding: 8px;
             text-align: left;
         }
 
-        .card th {
-            background-color: #f1f5f9;
+        .accessible-table th {
+            background-color: #f1f5f9; /* Very light gray header */
             font-weight: 500;
         }
+         .accessible-table tr:nth-child(even) {
+            background-color: #f8fafc; /* Zebra striping */
+        }
 
+        /* List Styling */
         .card ul, .card ol {
             padding-left: 20px;
             margin: 10px 0;
@@ -129,21 +157,7 @@
             margin-bottom: 5px;
         }
 
-        .section-title {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-
-        .section-title:after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 50px;
-            height: 4px;
-            background-color: var(--secondary-color);
-        }
-
+        /* Filter Button Styling */
         .btn-filter {
             transition: all 0.3s ease;
         }
@@ -153,39 +167,10 @@
             color: white;
         }
 
-        .category-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .card-scroll {
-            overflow-x: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--secondary-color) #f1f5f9;
-        }
-
-        .card-scroll::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .card-scroll::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        .card-scroll::-webkit-scrollbar-thumb {
-            background-color: var(--secondary-color);
-            border-radius: 6px;
-        }
-
+        /* Search Input Styling */
         .search-container {
             position: relative;
             max-width: 500px;
-            margin: 0 auto;
         }
 
         .search-icon {
@@ -193,65 +178,24 @@
             left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #64748b;
+            color: #64748b; /* Muted gray icon */
         }
 
         .search-input {
-            padding-left: 40px;
-            border-radius: 9999px;
-            border: 2px solid #e2e8f0;
+            padding-left: 40px; /* Space for icon */
+            border-radius: 9999px; /* Pill shape */
+            border: 2px solid #e2e8f0; /* Light border */
             width: 100%;
             transition: all 0.3s ease;
         }
 
         .search-input:focus {
             border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); /* Focus ring */
             outline: none;
         }
 
-        @media print {
-            .card-container {
-                page-break-inside: avoid;
-                margin-bottom: 20px;
-            }
-
-            .search-container, .filter-buttons {
-                display: none;
-            }
-
-            body {
-                background: white;
-            }
-
-            .card {
-                box-shadow: none;
-                border: 1px solid #e2e8f0;
-            }
-
-            .card-container .card {
-                transform: none !important; /* Ensure no transform in print */
-            }
-
-            .card-back {
-                display: block;
-                transform: none; /* Ensure no transform in print */
-                position: relative; /* Change from absolute for print */
-                margin-top: 20px;
-                backface-visibility: visible; /* Make sure it's visible */
-            }
-
-            .card-front {
-                position: relative; /* Change from absolute for print */
-                 backface-visibility: visible; /* Make sure it's visible */
-            }
-             /* Ensure no transition in print */
-            .card {
-                transition: none;
-            }
-        }
-
-        /* Override Tailwind for specific needs */
+        /* Gradient Text Utility */
         .text-grad {
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
@@ -259,62 +203,69 @@
             color: transparent;
         }
 
+        /* Background Pattern */
         .singapore-pattern {
             background-color: #f8fafc;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e3a8a' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
 
-        /* Accessible table styles */
-        .accessible-table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 1rem;
-        }
-
-        .accessible-table th,
-        .accessible-table td {
-            padding: 0.5rem;
-            text-align: left;
-            border: 1px solid #e2e8f0;
-        }
-
-        .accessible-table th {
-            background-color: #f1f5f9;
-            font-weight: 600;
-        }
-
-        .accessible-table tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-
-        .card-front::-webkit-scrollbar, .card-back::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .card-front::-webkit-scrollbar-track, .card-back::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        .card-front::-webkit-scrollbar-thumb, .card-back::-webkit-scrollbar-thumb {
-            background-color: var(--secondary-color);
-            border-radius: 6px;
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding-top: 0 !important; /* Remove padding for print */
+            }
+            #mainHeader, .search-container, .filter-buttons, .card-footer {
+                display: none; /* Hide non-essential elements */
+            }
+            main {
+                 margin-bottom: 0;
+            }
+            .card-container {
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+                height: auto; /* Allow height to adjust */
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+                transform: none !important; /* Ensure no flip */
+                transition: none;
+                 height: auto; /* Allow height to adjust */
+            }
+            .card-front, .card-back {
+                position: relative; /* Change from absolute for print */
+                transform: none !important; /* Ensure no rotation */
+                backface-visibility: visible; /* Make sure it's visible */
+                overflow-y: visible; /* Show all content */
+                height: auto; /* Allow height to adjust */
+                page-break-inside: avoid;
+            }
+            .card-back {
+                 margin-top: 20px; /* Space between front and back in print */
+            }
+             /* Ensure no transition in print */
+            .card {
+                transition: none;
+            }
         }
     </style>
 </head>
 <body class="singapore-pattern min-h-screen pb-12">
-    <header id="mainHeader" class="bg-white shadow-md py-6 mb-8 sticky top-0 z-10 transition-transform duration-300 ease-in-out">
+
+    <header id="mainHeader" class="bg-white shadow-md py-6 fixed top-0 left-0 right-0 z-30">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
+                <div class="mb-4 md:mb-0 text-center md:text-left">
                     <h1 class="text-3xl font-bold text-grad">Nursing Reference Cards</h1>
                     <p class="text-gray-600">For Nursing Students in Singapore</p>
                 </div>
-                <div class="search-container w-full md:w-auto">
+                <div class="search-container w-full md:w-auto mt-4 md:mt-0">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="searchInput" class="search-input py-2 px-4" placeholder="Search cards...">
                 </div>
             </div>
-            
+
             <div class="filter-buttons mt-6 overflow-x-auto whitespace-nowrap pb-2">
                 <button class="btn-filter active px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="all">All</button>
                 <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="vital-signs">Vital Signs</button>
@@ -324,9 +275,10 @@
                 <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="communication">Communication</button>
                 <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="medications">Medications</button>
                 <button class="btn-filter px-4 py-2 rounded-full mr-2 text-sm font-medium bg-gray-200" data-category="documentation">Documentation</button>
-            </div>
+                </div>
         </div>
     </header>
+
 
     <main class="container mx-auto px-4 mb-12">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cardsContainer">
@@ -2222,206 +2174,201 @@
     </footer>
 
       
-<script>
+    <script>
+        // Function to calculate and set body padding based on header height
+        function setBodyPadding() {
+            const header = document.getElementById('mainHeader');
+            const body = document.body;
+            if (header) {
+                const headerHeight = header.offsetHeight;
+                // Apply padding only if the header is currently visible (not translated)
+                if (!header.classList.contains('-translate-y-full')) {
+                     body.style.paddingTop = `${headerHeight}px`;
+                } else {
+                     body.style.paddingTop = '0'; // No padding if header is hidden
+                }
+            }
+        }
+
+        // Run initial setup after DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Existing Elements ---
+            // --- Elements ---
             const searchInput = document.getElementById('searchInput');
             const cardsContainer = document.getElementById('cardsContainer');
             const cards = cardsContainer.querySelectorAll('.card-container');
             const filterButtons = document.querySelectorAll('.btn-filter');
-            const header = document.getElementById('mainHeader'); // Get the header
+            const header = document.getElementById('mainHeader'); // Re-get header for this scope
 
-            // --- Existing Search Functionality ---
+            // --- Initial Body Padding Calculation ---
+            // Calculate padding initially
+            setBodyPadding();
+            // Recalculate after a short delay to account for rendering/layout shifts
+            setTimeout(setBodyPadding, 100);
+
+
+            // --- Search Functionality ---
             if (searchInput && cardsContainer) {
                 searchInput.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    cards.forEach(card => {
-                        const cardTitleElement = card.querySelector('.card-title');
-                        const cardContentElement = card.querySelector('.card-content');
-                        const cardBackContentElement = card.querySelector('.card-back');
+                    const searchTerm = this.value.toLowerCase().trim();
+                    // When searching, ensure the 'All' filter is active visually
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-primary-color', 'text-white');
+                        btn.classList.add('bg-gray-200');
+                        if (btn.getAttribute('data-category') === 'all') {
+                             btn.classList.remove('bg-gray-200');
+                             btn.classList.add('active', 'bg-primary-color', 'text-white');
+                        }
+                    });
 
-                        const cardTitle = cardTitleElement ? cardTitleElement.textContent.toLowerCase() : '';
-                        const cardContent = cardContentElement ? cardContentElement.textContent.toLowerCase() : '';
-                        const cardBackContent = cardBackContentElement ? cardBackContentElement.textContent.toLowerCase() : '';
+                    cards.forEach(cardContainer => {
+                        const cardTitleElement = cardContainer.querySelector('.card-title');
+                        const cardContentElements = cardContainer.querySelectorAll('.card-content, .card-back');
 
-                        if (cardTitle.includes(searchTerm) || cardContent.includes(searchTerm) || cardBackContent.includes(searchTerm)) {
-                            card.style.display = 'block';
+                        let textToSearch = '';
+                        if (cardTitleElement) {
+                            textToSearch += cardTitleElement.textContent.toLowerCase();
+                        }
+                        cardContentElements.forEach(el => {
+                             if (el) textToSearch += el.textContent.toLowerCase();
+                        });
+
+                        // Show card if it matches search term AND has content
+                        const hasContent = cardContainer.querySelector('.card-content > *:not(p:empty)'); // Check for non-empty content elements
+                        if (textToSearch.includes(searchTerm) && hasContent) {
+                             cardContainer.style.display = 'block';
                         } else {
-                            card.style.display = 'none';
+                             cardContainer.style.display = 'none';
                         }
                     });
                 });
             }
 
-            // --- Existing Category Filtering ---
+            // --- Category Filtering ---
             if (filterButtons.length > 0 && cardsContainer) {
                 filterButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         const category = this.getAttribute('data-category');
+                        // Clear search input when a filter button is clicked
+                        if (searchInput) searchInput.value = '';
 
-                        // Toggle active class
-                        filterButtons.forEach(btn => btn.classList.remove('active', 'bg-primary-color', 'text-white')); // More robust removal
-                        filterButtons.forEach(btn => btn.classList.add('bg-gray-200')); // Reset others to default bg
-                        this.classList.remove('bg-gray-200'); // Remove default bg from active
-                        this.classList.add('active', 'bg-primary-color', 'text-white'); // Use your primary color for active
 
-                        // Filter cards
-                        cards.forEach(card => {
-                            if (category === 'all' || card.getAttribute('data-category') === category) {
-                                card.style.display = 'block';
+                        filterButtons.forEach(btn => {
+                            btn.classList.remove('active', 'bg-primary-color', 'text-white');
+                            btn.classList.add('bg-gray-200');
+                        });
+                        this.classList.remove('bg-gray-200');
+                        this.classList.add('active', 'bg-primary-color', 'text-white');
+
+                        cards.forEach(cardContainer => {
+                            const cardCategory = cardContainer.getAttribute('data-category');
+                             // Check for non-empty content elements more reliably
+                            const hasContent = cardContainer.querySelector('.card-content > *:not(p:empty)');
+
+                             // Show card if category matches OR 'all' is selected, AND it has content
+                            if ((category === 'all' || cardCategory === category) && hasContent) {
+                                cardContainer.style.display = 'block';
                             } else {
-                                card.style.display = 'none';
+                                cardContainer.style.display = 'none';
                             }
                         });
                     });
                 });
-                 // Set initial active state more reliably
+                // Set initial active state and display by triggering click on 'All'
                 const initialActiveButton = document.querySelector('.btn-filter[data-category="all"]');
                 if (initialActiveButton) {
-                    initialActiveButton.classList.add('active', 'bg-primary-color', 'text-white');
-                     initialActiveButton.classList.remove('bg-gray-200');
+                    // Use timeout to ensure content check runs after initial render potentially hides things
+                    setTimeout(() => initialActiveButton.click(), 0);
                 }
             }
 
-
-            // --- Existing Touch-friendly Card Flipping ---
+            // --- Touch-friendly Card Flipping ---
             if (cards.length > 0) {
+                 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
                 cards.forEach(cardContainer => {
                     const card = cardContainer.querySelector('.card');
                     if (card) {
-                         // Detect touch devices more reliably
-                         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-
                         if (isTouchDevice) {
-                            // Remove hover effect for touch devices to prevent conflict
-                            cardContainer.classList.remove('group'); // Assuming 'group' utility might be used for hover parent selection, adjust if needed
-                            // Or more directly, disable the CSS hover rule via JS if complex (less ideal)
+                            cardContainer.classList.remove('group'); // Might be needed
 
                             card.addEventListener('click', function(e) {
-                                // Prevent click interfering if clicking on interactive elements inside card
-                                // if (e.target.closest('a, button, input, select, textarea')) {
-                                //     return;
-                                // }
-                                const currentTransform = window.getComputedStyle(this).transform;
-                                if (currentTransform === 'none' || currentTransform.includes('matrix(1') || currentTransform.includes('rotateY(0deg)')) {
-                                     this.style.transform = 'rotateY(180deg)';
-                                } else {
-                                     this.style.transform = 'rotateY(0deg)';
+                                if (e.target.closest('a, button, input, select, textarea')) {
+                                    return; // Prevent flip on interactive elements
                                 }
+                                const isFlipped = this.style.transform.includes('rotateY(180deg)');
+                                this.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
                             });
                         }
-                        // Non-touch devices will use the CSS :hover rule already defined
+                        // Non-touch devices use CSS :hover
                     }
                 });
             }
 
-            // --- Existing Keyboard Navigation (for scrolling) ---
-            document.addEventListener('keydown', function(e) {
-                // Avoid scrolling if focus is inside an input or textarea
-                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-                    return;
-                }
-                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                     e.preventDefault(); // Prevent default page scroll if needed, maybe not necessary
-                    window.scrollBy({ top: 500, behavior: 'smooth' });
-                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                     e.preventDefault(); // Prevent default page scroll if needed
-                    window.scrollBy({ top: -500, behavior: 'smooth' });
-                }
-            });
-
-            // --- Existing Optimize for PDF Export ---
-            // Check if the media matches 'print' - This logic likely belongs in CSS @media print
-            // Keeping it here is redundant if the CSS @media print rules are correctly set up.
-            // You can usually remove this JS part if your CSS print styles are sufficient.
-            /*
-            if (window.matchMedia && window.matchMedia('print').matches) {
-                document.querySelectorAll('.card').forEach(card => {
-                    card.style.transform = 'none';
-                });
-                document.querySelectorAll('.card-back').forEach(back => {
-                    back.style.transform = 'none';
-                    back.style.position = 'relative'; // Ensure this aligns with your CSS @media print
-                });
-                 document.querySelectorAll('.card-front').forEach(front => {
-                    front.style.position = 'relative'; // Ensure this aligns with your CSS @media print
-                });
-            }
-            */
-            // It's better handled by the @media print block in your CSS.
 
             // ***********************************************
-            // *** START: NEW - Hide Header on Scroll Logic ***
+            // *** START: Hide Header on Scroll Logic (Universal) ***
             // ***********************************************
-            if (header) { // Check if header element exists
+            if (header) {
                 let lastScrollTop = 0;
-                const delta = 5; // Minimum scroll distance (px) to trigger header show/hide
-                const mobileBreakpoint = 768; // Tailwind's 'md' breakpoint (adjust if needed)
+                const delta = 5; // Minimum scroll distance (px) before hiding/showing
 
                 window.addEventListener('scroll', function() {
-                    const screenWidth = window.innerWidth;
                     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const headerHeight = header.offsetHeight;
 
-                    // --- Mobile Behavior ---
-                    if (screenWidth < mobileBreakpoint) {
-                        // Make sure user scrolled more than delta
-                        if (Math.abs(lastScrollTop - scrollTop) <= delta) {
-                            return;
-                        }
-
-                        // Determine scroll direction
-                        if (scrollTop > lastScrollTop && scrollTop > header.offsetHeight) {
-                            // Scrolling Down & past header height: Hide header
-                            if (!header.classList.contains('-translate-y-full')) {
-                                header.classList.add('-translate-y-full');
-                            }
-                        } else {
-                            // Scrolling Up or near top: Show header
-                            if (header.classList.contains('-translate-y-full')) {
-                                header.classList.remove('-translate-y-full');
-                            }
-                        }
-                        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Update last scroll position
+                    if (Math.abs(lastScrollTop - scrollTop) <= delta) {
+                        return; // Ignore minor scrolls
                     }
-                    // --- Desktop Behavior ---
+
+                    // Scrolling Down & past header height
+                    if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
+                        if (!header.classList.contains('-translate-y-full')) {
+                            header.classList.add('-translate-y-full');
+                            // When header hides, remove body padding
+                            document.body.style.paddingTop = '0';
+                        }
+                    }
+                    // Scrolling Up or near top
                     else {
-                        // Ensure header is always visible on desktop
                         if (header.classList.contains('-translate-y-full')) {
-                           header.classList.remove('-translate-y-full');
-                        }
-                        lastScrollTop = 0; // Reset lastScrollTop for desktop state
-                    }
-                }, { passive: true }); // Use passive listener for better scroll performance
-
-                // Add resize listener to reset state if window size changes across breakpoint
-                 window.addEventListener('resize', function() {
-                    const screenWidth = window.innerWidth;
-                    if (screenWidth >= mobileBreakpoint) {
-                        // If resizing to desktop, ensure header is visible
-                         if (header.classList.contains('-translate-y-full')) {
-                           header.classList.remove('-translate-y-full');
+                            header.classList.remove('-translate-y-full');
+                            // When header shows, recalculate and apply body padding
+                            setBodyPadding();
                         }
                     }
-                    // Optionally reset lastScrollTop or let the scroll handler manage it
-                });
+                    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Update last scroll position
 
-                 // Initial check in case the page loads already scrolled down on mobile
-                 if (window.innerWidth < mobileBreakpoint) {
-                    const initialScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    if (initialScrollTop > header.offsetHeight) {
-                         header.classList.add('-translate-y-full');
-                    }
-                    lastScrollTop = initialScrollTop;
+                }, { passive: true });
+
+                // Add resize listener to recalculate padding
+                 window.addEventListener('resize', setBodyPadding);
+
+                 // Initial check in case the page loads already scrolled down
+                 const initialScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                 if (initialScrollTop > header.offsetHeight && header.offsetHeight > 0) { // Check headerHeight > 0
+                      header.classList.add('-translate-y-full');
+                      document.body.style.paddingTop = '0'; // No padding if starting hidden
+                 } else if (header.offsetHeight > 0) {
+                     setBodyPadding(); // Set initial padding if starting visible
                  }
+                 lastScrollTop = initialScrollTop;
+
 
             } else {
                 console.warn('Header element with ID "mainHeader" not found.');
             }
             // ***********************************************
-            // *** END: NEW - Hide Header on Scroll Logic ***
+            // *** END: Hide Header on Scroll Logic ***
             // ***********************************************
 
         }); // End of DOMContentLoaded
+
+        // Recalculate padding also on window load, after images and other resources are loaded
+        window.addEventListener('load', setBodyPadding);
+
     </script>
+
+</body>
+</html>
 </body>
 </html>
