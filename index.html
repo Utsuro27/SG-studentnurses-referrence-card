@@ -302,7 +302,7 @@
     </style>
 </head>
 <body class="singapore-pattern min-h-screen pb-12">
-    <header class="bg-white shadow-md py-6 mb-8 sticky top-0 z-10">
+    <header id="mainHeader" class="bg-white shadow-md py-6 mb-8 sticky top-0 z-10 transition-transform duration-300 ease-in-out">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0">
@@ -2221,95 +2221,207 @@
         </div>
     </footer>
 
-    <script>
+      
+<script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Existing Elements ---
             const searchInput = document.getElementById('searchInput');
             const cardsContainer = document.getElementById('cardsContainer');
             const cards = cardsContainer.querySelectorAll('.card-container');
             const filterButtons = document.querySelectorAll('.btn-filter');
-            
-            // Search functionality
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                
-                cards.forEach(card => {
-                    const cardTitle = card.querySelector('.card-title').textContent.toLowerCase();
-                    const cardContent = card.querySelector('.card-content').textContent.toLowerCase();
-                    const cardBackContent = card.querySelector('.card-back').textContent.toLowerCase();
-                    
-                    if (cardTitle.includes(searchTerm) || cardContent.includes(searchTerm) || cardBackContent.includes(searchTerm)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
+            const header = document.getElementById('mainHeader'); // Get the header
+
+            // --- Existing Search Functionality ---
+            if (searchInput && cardsContainer) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    cards.forEach(card => {
+                        const cardTitleElement = card.querySelector('.card-title');
+                        const cardContentElement = card.querySelector('.card-content');
+                        const cardBackContentElement = card.querySelector('.card-back');
+
+                        const cardTitle = cardTitleElement ? cardTitleElement.textContent.toLowerCase() : '';
+                        const cardContent = cardContentElement ? cardContentElement.textContent.toLowerCase() : '';
+                        const cardBackContent = cardBackContentElement ? cardBackContentElement.textContent.toLowerCase() : '';
+
+                        if (cardTitle.includes(searchTerm) || cardContent.includes(searchTerm) || cardBackContent.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
                 });
-            });
-            
-            // Category filtering
-            filterButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const category = this.getAttribute('data-category');
-                    
-                    // Toggle active class
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Filter cards
-                    if (category === 'all') {
-                        cards.forEach(card => card.style.display = 'block');
-                    } else {
+            }
+
+            // --- Existing Category Filtering ---
+            if (filterButtons.length > 0 && cardsContainer) {
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const category = this.getAttribute('data-category');
+
+                        // Toggle active class
+                        filterButtons.forEach(btn => btn.classList.remove('active', 'bg-primary-color', 'text-white')); // More robust removal
+                        filterButtons.forEach(btn => btn.classList.add('bg-gray-200')); // Reset others to default bg
+                        this.classList.remove('bg-gray-200'); // Remove default bg from active
+                        this.classList.add('active', 'bg-primary-color', 'text-white'); // Use your primary color for active
+
+                        // Filter cards
                         cards.forEach(card => {
-                            if (card.getAttribute('data-category') === category) {
+                            if (category === 'all' || card.getAttribute('data-category') === category) {
                                 card.style.display = 'block';
                             } else {
                                 card.style.display = 'none';
                             }
                         });
+                    });
+                });
+                 // Set initial active state more reliably
+                const initialActiveButton = document.querySelector('.btn-filter[data-category="all"]');
+                if (initialActiveButton) {
+                    initialActiveButton.classList.add('active', 'bg-primary-color', 'text-white');
+                     initialActiveButton.classList.remove('bg-gray-200');
+                }
+            }
+
+
+            // --- Existing Touch-friendly Card Flipping ---
+            if (cards.length > 0) {
+                cards.forEach(cardContainer => {
+                    const card = cardContainer.querySelector('.card');
+                    if (card) {
+                         // Detect touch devices more reliably
+                         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+
+                        if (isTouchDevice) {
+                            // Remove hover effect for touch devices to prevent conflict
+                            cardContainer.classList.remove('group'); // Assuming 'group' utility might be used for hover parent selection, adjust if needed
+                            // Or more directly, disable the CSS hover rule via JS if complex (less ideal)
+
+                            card.addEventListener('click', function(e) {
+                                // Prevent click interfering if clicking on interactive elements inside card
+                                // if (e.target.closest('a, button, input, select, textarea')) {
+                                //     return;
+                                // }
+                                const currentTransform = window.getComputedStyle(this).transform;
+                                if (currentTransform === 'none' || currentTransform.includes('matrix(1') || currentTransform.includes('rotateY(0deg)')) {
+                                     this.style.transform = 'rotateY(180deg)';
+                                } else {
+                                     this.style.transform = 'rotateY(0deg)';
+                                }
+                            });
+                        }
+                        // Non-touch devices will use the CSS :hover rule already defined
                     }
                 });
-            });
-            
-            // Touch-friendly card flipping for mobile
-            cards.forEach(cardContainer => {
-                const card = cardContainer.querySelector('.card');
-                
-                // Detect touch devices
-                if ('ontouchstart' in window || navigator.maxTouchPoints) {
-                    card.addEventListener('click', function(e) {
-                        this.style.transform = this.style.transform === 'rotateY(180deg)' ? 'rotateY(0deg)' : 'rotateY(180deg)';
-                    });
-                }
-                
-                // For non-touch devices, we'll use the CSS hover
-            });
-            
-            // Keyboard navigation
+            }
+
+            // --- Existing Keyboard Navigation (for scrolling) ---
             document.addEventListener('keydown', function(e) {
+                // Avoid scrolling if focus is inside an input or textarea
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                    return;
+                }
                 if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                    window.scrollBy({
-                        top: 500,
-                        behavior: 'smooth'
-                    });
+                     e.preventDefault(); // Prevent default page scroll if needed, maybe not necessary
+                    window.scrollBy({ top: 500, behavior: 'smooth' });
                 } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                    window.scrollBy({
-                        top: -500,
-                        behavior: 'smooth'
-                    });
+                     e.preventDefault(); // Prevent default page scroll if needed
+                    window.scrollBy({ top: -500, behavior: 'smooth' });
                 }
             });
-            
-            // Optimize for PDF export - expand all cards
+
+            // --- Existing Optimize for PDF Export ---
+            // Check if the media matches 'print' - This logic likely belongs in CSS @media print
+            // Keeping it here is redundant if the CSS @media print rules are correctly set up.
+            // You can usually remove this JS part if your CSS print styles are sufficient.
+            /*
             if (window.matchMedia && window.matchMedia('print').matches) {
                 document.querySelectorAll('.card').forEach(card => {
                     card.style.transform = 'none';
                 });
-                
                 document.querySelectorAll('.card-back').forEach(back => {
                     back.style.transform = 'none';
-                    back.style.position = 'relative';
+                    back.style.position = 'relative'; // Ensure this aligns with your CSS @media print
+                });
+                 document.querySelectorAll('.card-front').forEach(front => {
+                    front.style.position = 'relative'; // Ensure this aligns with your CSS @media print
                 });
             }
-        });
+            */
+            // It's better handled by the @media print block in your CSS.
+
+            // ***********************************************
+            // *** START: NEW - Hide Header on Scroll Logic ***
+            // ***********************************************
+            if (header) { // Check if header element exists
+                let lastScrollTop = 0;
+                const delta = 5; // Minimum scroll distance (px) to trigger header show/hide
+                const mobileBreakpoint = 768; // Tailwind's 'md' breakpoint (adjust if needed)
+
+                window.addEventListener('scroll', function() {
+                    const screenWidth = window.innerWidth;
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                    // --- Mobile Behavior ---
+                    if (screenWidth < mobileBreakpoint) {
+                        // Make sure user scrolled more than delta
+                        if (Math.abs(lastScrollTop - scrollTop) <= delta) {
+                            return;
+                        }
+
+                        // Determine scroll direction
+                        if (scrollTop > lastScrollTop && scrollTop > header.offsetHeight) {
+                            // Scrolling Down & past header height: Hide header
+                            if (!header.classList.contains('-translate-y-full')) {
+                                header.classList.add('-translate-y-full');
+                            }
+                        } else {
+                            // Scrolling Up or near top: Show header
+                            if (header.classList.contains('-translate-y-full')) {
+                                header.classList.remove('-translate-y-full');
+                            }
+                        }
+                        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Update last scroll position
+                    }
+                    // --- Desktop Behavior ---
+                    else {
+                        // Ensure header is always visible on desktop
+                        if (header.classList.contains('-translate-y-full')) {
+                           header.classList.remove('-translate-y-full');
+                        }
+                        lastScrollTop = 0; // Reset lastScrollTop for desktop state
+                    }
+                }, { passive: true }); // Use passive listener for better scroll performance
+
+                // Add resize listener to reset state if window size changes across breakpoint
+                 window.addEventListener('resize', function() {
+                    const screenWidth = window.innerWidth;
+                    if (screenWidth >= mobileBreakpoint) {
+                        // If resizing to desktop, ensure header is visible
+                         if (header.classList.contains('-translate-y-full')) {
+                           header.classList.remove('-translate-y-full');
+                        }
+                    }
+                    // Optionally reset lastScrollTop or let the scroll handler manage it
+                });
+
+                 // Initial check in case the page loads already scrolled down on mobile
+                 if (window.innerWidth < mobileBreakpoint) {
+                    const initialScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    if (initialScrollTop > header.offsetHeight) {
+                         header.classList.add('-translate-y-full');
+                    }
+                    lastScrollTop = initialScrollTop;
+                 }
+
+            } else {
+                console.warn('Header element with ID "mainHeader" not found.');
+            }
+            // ***********************************************
+            // *** END: NEW - Hide Header on Scroll Logic ***
+            // ***********************************************
+
+        }); // End of DOMContentLoaded
     </script>
 </body>
 </html>
